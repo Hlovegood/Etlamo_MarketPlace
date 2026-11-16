@@ -1,1 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @import 'tailwindcss';
+
+@theme {
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Inter', 'Helvetica Neue', Helvetica, Arial,
+    sans-serif;
+  --color-ink: #1d1d1f;
+  --color-graphite: #6e6e73;
+  --color-silver: #86868b;
+  --color-hairline: #d2d2d7;
+  --color-mist: #f5f5f7;
+  --color-azure: #0071e3;
+  --color-azure-deep: #0062c4;
+  --color-link: #0066cc;
+  --color-success: #1d8a4e;
+  --color-amber: #b25000;
+  --shadow-float: 0 4px 24px -6px rgb(0 0 0 / 0.12), 0 1px 2px rgb(0 0 0 / 0.04);
+  --shadow-lift: 0 20px 50px -18px rgb(0 0 0 / 0.28);
+  --animate-rise: rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-fade: fade 0.25s ease-out both;
+  --animate-pop: pop 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes pop {
+    from {
+      opacity: 0;
+      transform: scale(0.96) translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    @apply bg-white font-sans text-ink;
+    letter-spacing: -0.01em;
+  }
+  ::selection {
+    background: rgb(0 113 227 / 0.18);
+  }
+  input,
+  textarea,
+  select {
+    @apply outline-none;
+  }
+}
+
+@layer components {
+  .field {
+    @apply w-full rounded-xl border border-hairline bg-white px-4 py-3 text-[15px] text-ink transition placeholder:text-silver focus:border-azure focus:ring-4 focus:ring-azure/15;
+  }
+  .label {
+    @apply mb-1.5 block text-[13px] font-medium text-graphite;
+  }
+}
