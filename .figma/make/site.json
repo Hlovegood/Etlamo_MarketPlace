@@ -1,1 +1,10 @@
-{}
+{
+  "description": "Discover verified wedding and event planners, browse portfolios, post event requests, and message planners to bring your vision to life.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
