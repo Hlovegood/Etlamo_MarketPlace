@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { match, useRoute } from './lib/router'
 import { StoreProvider } from './lib/store'
-import { Footer, Nav } from './components/Shell'
+import { Footer, Nav, PersonaSwitcher } from './components/Shell'
 import { ToastProvider } from './components/ui'
 import Home from './pages/Home'
 import { Explore, ProjectDetail } from './pages/Explore'
@@ -66,6 +66,7 @@ export default function App() {
             <Routes path={path} query={query} />
           </main>
           {!bare && <Footer />}
+          <PersonaSwitcher />
         </div>
       </ToastProvider>
     </StoreProvider>

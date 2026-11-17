@@ -1,9 +1,9 @@
 import { createContext, useContext, useEffect, useState, type ButtonHTMLAttributes, type ReactNode } from 'react'
-import { BadgeCheck, CheckCircle2, X } from 'lucide-react'
+import { BadgeCheck, CheckCircle2, ChevronLeft, ChevronRight, Star, X } from 'lucide-react'
 import { cx } from '../lib/format'
 import type { User } from '../lib/types'
 
-type Variant = 'primary' | 'secondary' | 'ghost' | 'dark' | 'danger'
+type Variant = 'primary' | 'secondary' | 'ghost' | 'dark' | 'danger' | 'outline'
 
 export function Button({
   variant = 'primary',
@@ -14,14 +14,15 @@ export function Button({
   return (
     <button
       className={cx(
-        'inline-flex shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-full font-medium whitespace-nowrap transition duration-200 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40',
+        'inline-flex shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-full font-medium whitespace-nowrap transition-all duration-150 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-40 focus-visible:ring-4 focus-visible:ring-azure/25 focus-visible:outline-none',
         size === 'sm' && 'h-8 px-3.5 text-[13px]',
         size === 'md' && 'h-10 px-5 text-[15px]',
         size === 'lg' && 'h-12 px-7 text-[17px]',
-        variant === 'primary' && 'bg-azure text-white hover:bg-azure-deep',
+        variant === 'primary' && 'bg-azure text-white hover:bg-azure-deep shadow-subtle',
         variant === 'secondary' && 'bg-mist text-ink hover:bg-[#e8e8ed]',
+        variant === 'outline' && 'border border-hairline bg-white text-ink hover:bg-mist',
         variant === 'ghost' && 'text-link hover:bg-azure/8',
-        variant === 'dark' && 'bg-ink text-white hover:bg-black',
+        variant === 'dark' && 'bg-ink text-white hover:bg-black shadow-subtle',
         variant === 'danger' && 'bg-[#fbeaea] text-[#c4271b] hover:bg-[#f7dcdc]',
         className,
       )}
@@ -30,12 +31,12 @@ export function Button({
   )
 }
 
-const GRADIENTS = [
-  'from-[#ffb199] to-[#ff0844]',
-  'from-[#a1c4fd] to-[#5b7cfa]',
-  'from-[#84fab0] to-[#2fb380]',
-  'from-[#f6d365] to-[#fda085]',
-  'from-[#cfa8ff] to-[#7a5cff]',
+const AVATAR_TONES = [
+  'bg-stone-700 text-stone-100',
+  'bg-zinc-800 text-zinc-100',
+  'bg-[#2c3e50] text-[#ecf0f1]',
+  'bg-[#34495e] text-[#f4f6f7]',
+  'bg-[#4a3b32] text-[#f7ede2]',
 ]
 
 export function Avatar({ user, size = 36, className }: { user?: Pick<User, 'name' | 'avatar' | 'id'>; size?: number; className?: string }) {
@@ -45,7 +46,7 @@ export function Avatar({ user, size = 36, className }: { user?: Pick<User, 'name
     .map((p) => p[0])
     .slice(0, 2)
     .join('')
-  const g = GRADIENTS[(user?.id ?? '').split('').reduce((a, c) => a + c.charCodeAt(0), 0) % GRADIENTS.length]
+  const tone = AVATAR_TONES[(user?.id ?? '').split('').reduce((a, c) => a + c.charCodeAt(0), 0) % AVATAR_TONES.length]
   return user?.avatar ? (
     <img
       src={user.avatar}
@@ -56,7 +57,7 @@ export function Avatar({ user, size = 36, className }: { user?: Pick<User, 'name
   ) : (
     <span
       style={{ width: size, height: size, fontSize: size * 0.38 }}
-      className={cx('inline-flex shrink-0 items-center justify-center rounded-full bg-gradient-to-br font-semibold text-white', g, className)}
+      className={cx('inline-flex shrink-0 items-center justify-center rounded-full font-semibold', tone, className)}
     >
       {initials}
     </span>
@@ -67,8 +68,22 @@ export function Verified({ size = 16, label = false }: { size?: number; label?: 
   return (
     <span className="inline-flex items-center gap-1 text-azure" title="Verified planner">
       <BadgeCheck size={size} strokeWidth={2.2} className="fill-azure stroke-white" />
-      {label && <span className="text-[13px] font-medium">Verified</span>}
+      {label && <span className="text-[13px] font-medium text-azure">Verified</span>}
     </span>
+  )
+}
+
+export function RatingStars({ rating = 5, size = 14 }: { rating?: number; size?: number }) {
+  return (
+    <div className="flex items-center gap-0.5" aria-label={`${rating} out of 5 stars`}>
+      {Array.from({ length: 5 }).map((_, i) => (
+        <Star
+          key={i}
+          size={size}
+          className={i < Math.floor(rating) ? 'fill-[#ff9500] text-[#ff9500]' : 'text-silver/40'}
+        />
+      ))}
+    </div>
   )
 }
 
@@ -89,9 +104,9 @@ export function Chip({
       type={onClick ? 'button' : undefined}
       onClick={onClick}
       className={cx(
-        'inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-[13px] font-medium whitespace-nowrap transition',
-        onClick && 'cursor-pointer',
-        active ? 'bg-ink text-white' : 'bg-mist text-ink hover:bg-[#e8e8ed]',
+        'inline-flex items-center gap-1 rounded-full px-3.5 py-1.5 text-[13px] font-medium whitespace-nowrap transition-all duration-150',
+        onClick && 'cursor-pointer active:scale-[0.96]',
+        active ? 'bg-ink text-white shadow-subtle' : 'bg-mist text-ink hover:bg-[#e8e8ed]',
         className,
       )}
     >
@@ -110,14 +125,14 @@ export function Segmented<T extends string>({
   onChange: (v: T) => void
 }) {
   return (
-    <div className="inline-flex rounded-[10px] bg-[#e8e8ed]/70 p-0.5">
+    <div className="inline-flex rounded-xl bg-[#e8e8ed]/70 p-0.5">
       {options.map((o) => (
         <button
           key={o.value}
           type="button"
           onClick={() => onChange(o.value)}
           className={cx(
-            'cursor-pointer rounded-lg px-3.5 py-1.5 text-[13px] font-medium transition',
+            'cursor-pointer rounded-[9px] px-3.5 py-1.5 text-[13px] font-medium transition-all duration-150',
             value === o.value ? 'bg-white text-ink shadow-[0_1px_3px_rgb(0_0_0/0.12)]' : 'text-graphite hover:text-ink',
           )}
         >
@@ -142,7 +157,7 @@ export function Modal({ open, onClose, children, width = 'max-w-lg' }: { open: b
   if (!open) return null
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-6">
-      <div className="absolute inset-0 animate-fade bg-black/35 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 animate-fade bg-black/40 backdrop-blur-md" onClick={onClose} />
       <div className={cx('relative max-h-[92vh] w-full animate-pop overflow-y-auto rounded-t-3xl bg-white shadow-lift sm:rounded-3xl', width)}>
         <button
           onClick={onClose}
@@ -153,6 +168,107 @@ export function Modal({ open, onClose, children, width = 'max-w-lg' }: { open: b
         </button>
         {children}
       </div>
+    </div>
+  )
+}
+
+export function LightboxModal({
+  images,
+  index,
+  open,
+  onClose,
+  onIndexChange,
+  title,
+}: {
+  images: string[]
+  index: number
+  open: boolean
+  onClose: () => void
+  onIndexChange: (i: number) => void
+  title?: string
+}) {
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+      if (e.key === 'ArrowRight') onIndexChange((index + 1) % images.length)
+      if (e.key === 'ArrowLeft') onIndexChange((index - 1 + images.length) % images.length)
+    }
+    document.addEventListener('keydown', onKey)
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.body.style.overflow = ''
+    }
+  }, [open, index, images.length, onClose, onIndexChange])
+
+  if (!open || !images.length) return null
+
+  return (
+    <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black/95 p-4 backdrop-blur-2xl">
+      {/* Top bar */}
+      <div className="absolute top-0 inset-x-0 z-20 flex h-16 items-center justify-between px-6 text-white/90">
+        <div className="flex items-center gap-3">
+          <span className="text-[14px] font-medium tracking-wide text-white/70">
+            {index + 1} / {images.length}
+          </span>
+          {title && <span className="hidden text-[14px] font-medium text-white/90 sm:inline">· {title}</span>}
+        </div>
+        <button
+          onClick={onClose}
+          className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20 active:scale-95"
+          aria-label="Close lightbox"
+        >
+          <X size={20} />
+        </button>
+      </div>
+
+      {/* Main Image */}
+      <div className="relative flex h-full max-h-[82vh] w-full max-w-6xl items-center justify-center px-12">
+        <img
+          key={images[index]}
+          src={images[index]}
+          alt=""
+          className="max-h-full max-w-full rounded-2xl object-contain shadow-2xl transition-all duration-300 animate-rise"
+        />
+
+        {images.length > 1 && (
+          <>
+            <button
+              onClick={() => onIndexChange((index - 1 + images.length) % images.length)}
+              className="absolute left-2 top-1/2 -translate-y-1/2 flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-md transition hover:bg-white/25 active:scale-95"
+              aria-label="Previous photo"
+            >
+              <ChevronLeft size={24} />
+            </button>
+            <button
+              onClick={() => onIndexChange((index + 1) % images.length)}
+              className="absolute right-2 top-1/2 -translate-y-1/2 flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-md transition hover:bg-white/25 active:scale-95"
+              aria-label="Next photo"
+            >
+              <ChevronRight size={24} />
+            </button>
+          </>
+        )}
+      </div>
+
+      {/* Bottom thumbnails strip */}
+      {images.length > 1 && (
+        <div className="absolute bottom-4 z-20 flex max-w-xl gap-2 overflow-x-auto p-2 scrollbar-none">
+          {images.map((src, i) => (
+            <button
+              key={src + i}
+              onClick={() => onIndexChange(i)}
+              className={cx(
+                'relative h-12 w-16 shrink-0 cursor-pointer overflow-hidden rounded-lg transition-all',
+                i === index ? 'ring-2 ring-azure ring-offset-2 ring-offset-black scale-105 opacity-100' : 'opacity-50 hover:opacity-80',
+              )}
+            >
+              <img src={src} alt="" className="h-full w-full object-cover" />
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
@@ -171,8 +287,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     <ToastCtx.Provider value={(msg) => setToast({ id: Date.now(), msg })}>
       {children}
       {toast && (
-        <div key={toast.id} className="pointer-events-none fixed inset-x-0 bottom-6 z-[60] flex justify-center px-4">
-          <div className="flex animate-pop items-center gap-2 rounded-full bg-ink/92 px-5 py-3 text-[14px] font-medium text-white shadow-lift backdrop-blur-xl">
+        <div key={toast.id} className="pointer-events-none fixed inset-x-0 bottom-6 z-[90] flex justify-center px-4">
+          <div className="flex animate-pop items-center gap-2 rounded-full bg-ink/95 px-5 py-3 text-[14px] font-medium text-white shadow-lift backdrop-blur-xl">
             <CheckCircle2 size={17} className="text-[#30d158]" />
             {toast.msg}
           </div>
@@ -207,5 +323,5 @@ export function PageHeader({ eyebrow, title, sub, right }: { eyebrow?: string; t
 }
 
 export const Container = ({ children, className }: { children: ReactNode; className?: string }) => (
-  <div className={cx('mx-auto w-full max-w-[1200px] px-5 md:px-8', className)}>{children}</div>
+  <div className={cx('mx-auto w-full max-w-[1240px] px-5 md:px-8', className)}>{children}</div>
 )

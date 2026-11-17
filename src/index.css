@@ -1,30 +1,40 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap');
 @import 'tailwindcss';
 
 @theme {
   --font-sans:
     -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Inter', 'Helvetica Neue', Helvetica, Arial,
     sans-serif;
+  --font-serif:
+    'Cormorant Garamond', Georgia, Cambria, 'Times New Roman', Times, serif;
   --color-ink: #1d1d1f;
+  --color-ink-deep: #000000;
   --color-graphite: #6e6e73;
   --color-silver: #86868b;
   --color-hairline: #d2d2d7;
   --color-mist: #f5f5f7;
+  --color-mist-light: #fbfbfd;
   --color-azure: #0071e3;
   --color-azure-deep: #0062c4;
+  --color-azure-tint: #e8f2fe;
   --color-link: #0066cc;
   --color-success: #1d8a4e;
+  --color-success-bg: #eafaf1;
   --color-amber: #b25000;
-  --shadow-float: 0 4px 24px -6px rgb(0 0 0 / 0.12), 0 1px 2px rgb(0 0 0 / 0.04);
-  --shadow-lift: 0 20px 50px -18px rgb(0 0 0 / 0.28);
-  --animate-rise: rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --color-amber-bg: #fff8eb;
+  --color-rose: #e11d48;
+  --shadow-subtle: 0 1px 3px 0 rgb(0 0 0 / 0.04), 0 1px 2px -1px rgb(0 0 0 / 0.02);
+  --shadow-float: 0 4px 24px -6px rgb(0 0 0 / 0.08), 0 1px 2px rgb(0 0 0 / 0.04);
+  --shadow-lift: 0 20px 48px -14px rgb(0 0 0 / 0.16), 0 1px 3px rgb(0 0 0 / 0.04);
+  --shadow-glow: 0 0 28px -4px rgb(0 113 227 / 0.25);
+  --animate-rise: rise 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
   --animate-fade: fade 0.25s ease-out both;
-  --animate-pop: pop 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-pop: pop 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
 
   @keyframes rise {
     from {
       opacity: 0;
-      transform: translateY(14px);
+      transform: translateY(16px);
     }
     to {
       opacity: 1;
@@ -42,7 +52,7 @@
   @keyframes pop {
     from {
       opacity: 0;
-      transform: scale(0.96) translateY(6px);
+      transform: scale(0.96) translateY(8px);
     }
     to {
       opacity: 1;
@@ -52,10 +62,15 @@
 }
 
 @layer base {
+  html,
+  body {
+    overflow-x: clip;
+  }
   html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
   }
   body {
     @apply bg-white font-sans text-ink;
@@ -66,16 +81,36 @@
   }
   input,
   textarea,
-  select {
+  select,
+  button {
     @apply outline-none;
+  }
+  :focus-visible {
+    @apply ring-4 ring-azure/20 outline-none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 
 @layer components {
   .field {
-    @apply w-full rounded-xl border border-hairline bg-white px-4 py-3 text-[15px] text-ink transition placeholder:text-silver focus:border-azure focus:ring-4 focus:ring-azure/15;
+    @apply w-full rounded-2xl border border-hairline bg-white px-4 py-3 text-[15px] text-ink transition-all duration-200 placeholder:text-silver hover:border-silver/80 focus:border-azure focus:ring-4 focus:ring-azure/15;
   }
   .label {
     @apply mb-1.5 block text-[13px] font-medium text-graphite;
+  }
+  .glass-nav {
+    @apply border-b border-black/[0.07] bg-white/80 backdrop-blur-2xl backdrop-saturate-180;
+  }
+  .glass-card {
+    @apply rounded-3xl border border-black/[0.06] bg-white/90 backdrop-blur-xl shadow-subtle hover:shadow-float transition-all duration-300;
   }
 }
