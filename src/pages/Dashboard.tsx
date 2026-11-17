@@ -2,12 +2,14 @@ import { useState } from 'react'
 import { ArrowRight, BadgeCheck, Camera, Clock, Eye, FileText, Heart, MessageCircle, Plus, ShieldCheck, Sparkles } from 'lucide-react'
 import { Link, navigate } from '../lib/router'
 import { greeting, useStore } from '../lib/store'
+import { useI18n } from '../lib/i18n'
 import { clockTime, compact, cx, eventDate, publicName, readImage } from '../lib/format'
 import { PlannerCard, ProjectCard, RequestCard } from '../components/cards'
 import { Avatar, Button, Container, Empty, Modal, Verified, useToast } from '../components/ui'
 
 export default function Dashboard() {
   const { me } = useStore()
+  const { t } = useI18n()
   const [editing, setEditing] = useState(false)
   if (!me || me.role === 'admin')
     return (
@@ -26,16 +28,16 @@ export default function Dashboard() {
         <div className="flex animate-rise items-center gap-5">
           <button onClick={() => setEditing(true)} className="group relative cursor-pointer" aria-label="Edit profile">
             <Avatar user={me} size={72} />
-            <span className="absolute -right-1 -bottom-1 flex h-7 w-7 items-center justify-center rounded-full bg-white text-graphite shadow-float group-hover:text-azure">
+            <span className="absolute -right-1 -bottom-1 flex h-7 w-7 items-center justify-center rounded-full bg-white dark:bg-card text-graphite shadow-float group-hover:text-azure">
               <Camera size={14} />
             </span>
           </button>
           <div>
-            <h1 className="text-[32px] leading-tight font-semibold tracking-[-0.03em] md:text-[44px]">{greeting(me)}</h1>
+            <h1 className="text-[32px] leading-tight font-semibold tracking-[-0.03em] md:text-[44px] text-ink">{greeting(me)}</h1>
             <p className="text-[15px] text-graphite">
               {me.role === 'planner' ? (me.business ?? 'Planner') : 'Client'} ·{' '}
               <button onClick={() => setEditing(true)} className="cursor-pointer text-link hover:underline">
-                Edit profile
+                {t('dash_edit_profile', 'Edit profile')}
               </button>
             </p>
           </div>
@@ -51,43 +53,44 @@ function StatCard({ icon, n, l, to }: { icon: React.ReactNode; n: string | numbe
   const body = (
     <>
       <span className="text-graphite">{icon}</span>
-      <p className="mt-4 text-[32px] leading-none font-semibold tracking-tight">{n}</p>
+      <p className="mt-4 text-[32px] leading-none font-semibold tracking-tight text-ink">{n}</p>
       <p className="mt-1.5 text-[13px] text-graphite">{l}</p>
     </>
   )
   return to ? (
-    <Link to={to} className="rounded-3xl bg-mist p-5 transition hover:bg-[#ececf0]">
+    <Link to={to} className="rounded-3xl bg-mist dark:bg-card dark:border dark:border-card-border p-5 transition hover:bg-[#ececf0] dark:hover:bg-card-border/50">
       {body}
     </Link>
   ) : (
-    <div className="rounded-3xl bg-mist p-5">{body}</div>
+    <div className="rounded-3xl bg-mist dark:bg-card dark:border dark:border-card-border p-5">{body}</div>
   )
 }
 
 function Inbox() {
   const { db, me, getUser } = useStore()
-  const threads = db.threads.filter((t) => t.clientId === me!.id || t.plannerId === me!.id).sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 4)
+  const { t } = useI18n()
+  const threads = db.threads.filter((tItem) => tItem.clientId === me!.id || tItem.plannerId === me!.id).sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 4)
   return (
-    <section className="rounded-[28px] border border-black/[0.07] p-6">
+    <section className="rounded-[28px] border border-black/[0.07] dark:border-card-border bg-white dark:bg-card p-6">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-[20px] font-semibold tracking-tight">Recent messages</h2>
+        <h2 className="text-[20px] font-semibold tracking-tight text-ink">{t('dash_recent_messages', 'Recent messages')}</h2>
         <Link to="/messages" className="text-[14px] text-link hover:underline">
-          See all
+          {t('dash_see_all', 'See all')}
         </Link>
       </div>
       {threads.length === 0 ? (
-        <p className="py-6 text-center text-[14px] text-graphite">No conversations yet.</p>
+        <p className="py-6 text-center text-[14px] text-graphite">{t('no_conversations_yet', 'No conversations yet.')}</p>
       ) : (
         <div className="-mx-2 space-y-1">
-          {threads.map((t) => {
-            const o = getUser(t.clientId === me!.id ? t.plannerId : t.clientId)!
-            const last = db.messages.filter((m) => m.threadId === t.id).at(-1)
-            const unread = db.messages.some((m) => m.threadId === t.id && m.senderId !== me!.id && m.createdAt > (t.lastRead[me!.id] ?? 0))
+          {threads.map((tItem) => {
+            const o = getUser(tItem.clientId === me!.id ? tItem.plannerId : tItem.clientId)!
+            const last = db.messages.filter((m) => m.threadId === tItem.id).at(-1)
+            const unread = db.messages.some((m) => m.threadId === tItem.id && m.senderId !== me!.id && m.createdAt > (tItem.lastRead[me!.id] ?? 0))
             return (
-              <Link key={t.id} to={`/messages/${t.id}`} className="flex items-center gap-3 rounded-2xl px-2 py-2.5 hover:bg-mist">
+              <Link key={tItem.id} to={`/messages/${tItem.id}`} className="flex items-center gap-3 rounded-2xl px-2 py-2.5 hover:bg-mist dark:hover:bg-card-border/40">
                 <Avatar user={o} size={40} />
                 <div className="min-w-0 flex-1">
-                  <p className={cx('flex items-center gap-1 text-[14px]', unread ? 'font-semibold' : 'font-medium')}>
+                  <p className={cx('flex items-center gap-1 text-[14px] text-ink', unread ? 'font-semibold' : 'font-medium')}>
                     <span className="truncate">{o.role === 'planner' ? o.business : publicName(o.name)}</span>
                     {o.verification === 'verified' && <Verified size={13} />}
                   </p>
@@ -108,51 +111,52 @@ function Inbox() {
 
 function ClientDash() {
   const { db, me, unreadCount } = useStore()
+  const { t } = useI18n()
   const mine = db.requests.filter((r) => r.clientId === me!.id).sort((a, b) => b.createdAt - a.createdAt)
   const open = mine.filter((r) => r.status === 'open')
-  const conversations = db.threads.filter((t) => t.clientId === me!.id).length
+  const conversations = db.threads.filter((tItem) => tItem.clientId === me!.id).length
   const planners = db.users.filter((u) => u.role === 'planner' && u.verification === 'verified').slice(0, 3)
 
   return (
     <div className="space-y-12">
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <StatCard icon={<FileText size={20} />} n={open.length} l="Open requests" to="/requests" />
-        <StatCard icon={<MessageCircle size={20} />} n={conversations} l="Planner conversations" to="/messages" />
-        <StatCard icon={<Sparkles size={20} />} n={unreadCount} l="Unread" to="/messages" />
-        <button onClick={() => navigate('/requests/new')} className="flex cursor-pointer flex-col justify-between rounded-3xl bg-azure p-5 text-left text-white transition hover:bg-azure-deep">
+        <StatCard icon={<FileText size={20} />} n={open.length} l={t('dash_open_requests', 'Open requests')} to="/requests" />
+        <StatCard icon={<MessageCircle size={20} />} n={conversations} l={t('dash_conversations', 'Planner conversations')} to="/messages" />
+        <StatCard icon={<Sparkles size={20} />} n={unreadCount} l={t('dash_unread', 'Unread')} to="/messages" />
+        <button onClick={() => navigate('/requests/new')} className="flex cursor-pointer flex-col justify-between rounded-3xl bg-azure p-5 text-left rtl:text-right text-white transition hover:bg-azure-deep shadow-subtle">
           <Plus size={22} />
           <span>
-            <span className="block text-[17px] font-semibold">Post a request</span>
-            <span className="text-[13px] text-white/80">Get replies from verified planners</span>
+            <span className="block text-[17px] font-semibold">{t('dash_post_request_cta', 'Post a request')}</span>
+            <span className="text-[13px] text-white/80">{t('dash_post_request_sub', 'Get replies from verified planners')}</span>
           </span>
         </button>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
         <section>
-          <h2 className="mb-4 text-[24px] font-semibold tracking-tight">Your requests</h2>
+          <h2 className="mb-4 text-[24px] font-semibold tracking-tight text-ink">{t('dash_your_requests', 'Your requests')}</h2>
           {mine.length === 0 ? (
-            <Empty icon={<FileText size={24} />} title="Tell planners what you need" body="Post your first request. Most clients hear from a planner within hours." action={<Button onClick={() => navigate('/requests/new')}>Post a request</Button>} />
+            <Empty icon={<FileText size={24} />} title={t('dash_no_requests_title', 'Tell planners what you need')} body={t('dash_no_requests_sub', 'Post your first request. Most clients hear from a planner within hours.')} action={<Button onClick={() => navigate('/requests/new')}>{t('dash_post_request_cta', 'Post a request')}</Button>} />
           ) : (
             <div className="space-y-3">
               {mine.map((r) => {
-                const n = db.threads.filter((t) => t.requestId === r.id).length
+                const n = db.threads.filter((tItem) => tItem.requestId === r.id).length
                 return (
-                  <Link key={r.id} to={`/request/${r.id}`} className="flex items-center gap-4 rounded-3xl border border-black/[0.07] p-5 transition hover:shadow-float">
+                  <Link key={r.id} to={`/request/${r.id}`} className="flex items-center gap-4 rounded-3xl border border-black/[0.07] dark:border-card-border bg-white dark:bg-card p-5 transition hover:shadow-float">
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         <span className={cx('h-2 w-2 rounded-full', r.status === 'open' ? 'bg-[#30d158]' : 'bg-silver')} />
                         <span className="text-[12px] text-graphite">
-                          {r.status === 'open' ? 'Open' : 'Closed'} · {r.type} · {eventDate(r.date)}
+                          {r.status === 'open' ? t('req_open_badge', 'Open') : t('req_closed_badge', 'Closed')} · {r.type} · {eventDate(r.date)}
                         </span>
                       </div>
-                      <p className="mt-1 truncate text-[17px] font-semibold">{r.title}</p>
+                      <p className="mt-1 truncate text-[17px] font-semibold text-ink">{r.title}</p>
                     </div>
-                    <div className="text-right">
-                      <p className="text-[22px] leading-none font-semibold">{n}</p>
+                    <div className="text-right rtl:text-left">
+                      <p className="text-[22px] leading-none font-semibold text-ink">{n}</p>
                       <p className="text-[12px] text-graphite">{n === 1 ? 'reply' : 'replies'}</p>
                     </div>
-                    <ArrowRight size={16} className="text-silver" />
+                    <ArrowRight size={16} className="text-silver rtl:rotate-180" />
                   </Link>
                 )
               })}
@@ -164,9 +168,9 @@ function ClientDash() {
 
       <section>
         <div className="mb-5 flex items-end justify-between">
-          <h2 className="text-[24px] font-semibold tracking-tight">Planners you might love</h2>
+          <h2 className="text-[24px] font-semibold tracking-tight text-ink">{t('dash_planners_love', 'Planners you might love')}</h2>
           <Link to="/planners" className="text-[14px] text-link hover:underline">
-            Browse all
+            {t('dash_browse_all', 'Browse all')}
           </Link>
         </div>
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -181,60 +185,61 @@ function ClientDash() {
 
 function PlannerDash() {
   const { db, me } = useStore()
+  const { t } = useI18n()
   const projects = db.projects.filter((p) => p.plannerId === me!.id)
   const likes = projects.reduce((s, p) => s + p.baseLikes + p.likedBy.length, 0)
   const views = projects.reduce((s, p) => s + p.views, 0)
-  const conversations = db.threads.filter((t) => t.plannerId === me!.id).length
-  const requests = db.requests.filter((r) => r.status === 'open' && !db.threads.some((t) => t.requestId === r.id && t.plannerId === me!.id)).slice(0, 3)
+  const conversations = db.threads.filter((tItem) => tItem.plannerId === me!.id).length
+  const requests = db.requests.filter((r) => r.status === 'open' && !db.threads.some((tItem) => tItem.requestId === r.id && tItem.plannerId === me!.id)).slice(0, 3)
   const status = me!.verification ?? 'none'
 
   return (
     <div className="space-y-12">
       {status !== 'verified' && (
-        <div className={cx('flex flex-col gap-5 rounded-[28px] p-7 sm:flex-row sm:items-center', status === 'pending' ? 'bg-[#fff4e5]' : 'bg-ink text-white')}>
-          <div className={cx('flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl', status === 'pending' ? 'bg-white text-amber' : 'bg-white/10 text-[#2997ff]')}>
+        <div className={cx('flex flex-col gap-5 rounded-[28px] p-7 sm:flex-row sm:items-center', status === 'pending' ? 'bg-[#fff4e5] dark:bg-[#342410] dark:border dark:border-[#5a3e1a]' : 'bg-ink dark:bg-card dark:border dark:border-card-border text-white')}>
+          <div className={cx('flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl', status === 'pending' ? 'bg-white dark:bg-amber/20 text-amber' : 'bg-white/10 text-[#2997ff]')}>
             {status === 'pending' ? <Clock size={26} /> : <ShieldCheck size={26} />}
           </div>
           <div className="flex-1">
             <p className="text-[20px] font-semibold tracking-tight">
-              {status === 'pending' ? 'Your verification is in review' : status === 'rejected' ? 'Your application needs changes' : 'Finish verification to go live'}
+              {status === 'pending' ? t('verify_status_pending', 'Your verification is in review') : status === 'rejected' ? t('verify_status_rejected', 'Your application needs changes') : t('dash_finish_verification', 'Finish verification to go live')}
             </p>
-            <p className={cx('mt-0.5 text-[15px]', status === 'pending' ? 'text-[#7a4100]' : 'text-[#a1a1a6]')}>
+            <p className={cx('mt-0.5 text-[15px]', status === 'pending' ? 'text-[#7a4100] dark:text-[#ffbe76]' : 'text-[#a1a1a6]')}>
               {status === 'pending'
-                ? 'Keep adding projects. They’ll appear in Explore the moment you’re approved.'
+                ? t('dash_keep_adding_projects', 'Keep adding projects. They’ll appear in Explore the moment you’re approved.')
                 : 'Until you’re verified, your profile is private and you can’t message clients.'}
             </p>
           </div>
-          <Button variant={status === 'pending' ? 'dark' : 'secondary'} className={status === 'pending' ? '' : 'bg-white'} onClick={() => navigate('/verify')}>
-            {status === 'pending' ? 'View status' : status === 'rejected' ? 'Update application' : 'Start verification'}
+          <Button variant={status === 'pending' ? 'dark' : 'secondary'} className={status === 'pending' ? '' : 'bg-white dark:bg-azure dark:text-white'} onClick={() => navigate('/verify')}>
+            {status === 'pending' ? t('dash_view_status', 'View status') : status === 'rejected' ? 'Update application' : t('dash_start_verification', 'Start verification')}
           </Button>
         </div>
       )}
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <StatCard icon={status === 'verified' ? <BadgeCheck size={20} className="text-azure" /> : <ShieldCheck size={20} />} n={status === 'verified' ? 'Verified' : status === 'pending' ? 'In review' : 'Not yet'} l="Verification" to="/verify" />
-        <StatCard icon={<Heart size={20} />} n={compact(likes)} l="Appreciations" />
-        <StatCard icon={<Eye size={20} />} n={compact(views)} l="Project views" />
-        <StatCard icon={<MessageCircle size={20} />} n={conversations} l="Client conversations" to="/messages" />
+        <StatCard icon={status === 'verified' ? <BadgeCheck size={20} className="text-azure" /> : <ShieldCheck size={20} />} n={status === 'verified' ? t('dash_verified', 'Verified') : status === 'pending' ? t('dash_in_review', 'In review') : 'Not yet'} l={t('dash_verification', 'Verification')} to="/verify" />
+        <StatCard icon={<Heart size={20} />} n={compact(likes)} l={t('dash_appreciations', 'Appreciations')} />
+        <StatCard icon={<Eye size={20} />} n={compact(views)} l={t('dash_project_views', 'Project views')} />
+        <StatCard icon={<MessageCircle size={20} />} n={conversations} l={t('dash_client_conversations', 'Client conversations')} to="/messages" />
       </div>
 
       <section>
         <div className="mb-5 flex items-end justify-between">
-          <h2 className="text-[24px] font-semibold tracking-tight">Your portfolio</h2>
+          <h2 className="text-[24px] font-semibold tracking-tight text-ink">{t('dash_your_portfolio', 'Your portfolio')}</h2>
           <Link to={`/planner/${me!.id}`} className="text-[14px] text-link hover:underline">
-            View public profile
+            {t('dash_view_profile', 'View public profile')}
           </Link>
         </div>
         <div className="grid gap-x-5 gap-y-9 sm:grid-cols-2 lg:grid-cols-3">
           <button
             onClick={() => navigate('/portfolio/new')}
-            className="flex aspect-[4/3] cursor-pointer flex-col items-center justify-center rounded-[22px] border-2 border-dashed border-hairline text-graphite transition hover:border-azure hover:text-azure"
+            className="flex aspect-[4/3] cursor-pointer flex-col items-center justify-center rounded-[22px] border-2 border-dashed border-hairline dark:border-card-border text-graphite transition hover:border-azure hover:text-azure"
           >
-            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-mist">
+            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-mist dark:bg-card-border/60">
               <Plus size={22} />
             </span>
-            <span className="mt-3 text-[15px] font-semibold">Add a project</span>
-            <span className="text-[13px]">Show off an event you planned</span>
+            <span className="mt-3 text-[15px] font-semibold">{t('dash_add_project', 'Add a project')}</span>
+            <span className="text-[13px]">{t('dash_add_project_sub', 'Show off an event you planned')}</span>
           </button>
           {projects.map((p) => (
             <ProjectCard key={p.id} project={p} showPlanner={false} />
@@ -245,9 +250,9 @@ function PlannerDash() {
       <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
         <section>
           <div className="mb-4 flex items-end justify-between">
-            <h2 className="text-[24px] font-semibold tracking-tight">New requests for you</h2>
+            <h2 className="text-[24px] font-semibold tracking-tight text-ink">{t('dash_new_requests_for_you', 'New requests for you')}</h2>
             <Link to="/requests" className="text-[14px] text-link hover:underline">
-              See all
+              {t('dash_see_all', 'See all')}
             </Link>
           </div>
           {requests.length ? (
@@ -268,6 +273,7 @@ function PlannerDash() {
 
 function EditProfile({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { me, updateMe } = useStore()
+  const { t } = useI18n()
   const toast = useToast()
   const [f, setF] = useState(() => ({ name: me!.name, location: me!.location, bio: me!.bio ?? '', priceFrom: String(me!.priceFrom ?? ''), avatar: me!.avatar }))
   const planner = me!.role === 'planner'
@@ -282,7 +288,7 @@ function EditProfile({ open, onClose }: { open: boolean; onClose: () => void }) 
           onClose()
         }}
       >
-        <h3 className="text-[24px] font-semibold tracking-tight">Edit profile</h3>
+        <h3 className="text-[24px] font-semibold tracking-tight text-ink">{t('dash_edit_profile', 'Edit profile')}</h3>
         <div className="mt-6 flex items-center gap-4">
           <Avatar user={{ ...me!, avatar: f.avatar }} size={64} />
           <label className="cursor-pointer text-[15px] text-link hover:underline">
@@ -325,7 +331,7 @@ function EditProfile({ open, onClose }: { open: boolean; onClose: () => void }) 
         </div>
         <div className="mt-7 flex justify-end gap-2">
           <Button type="button" variant="secondary" onClick={onClose}>
-            Cancel
+            {t('contact_cancel', 'Cancel')}
           </Button>
           <Button type="submit">Save</Button>
         </div>

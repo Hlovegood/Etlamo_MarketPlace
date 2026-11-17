@@ -1,6 +1,8 @@
 import { useEffect } from 'react'
 import { match, useRoute } from './lib/router'
 import { StoreProvider } from './lib/store'
+import { ThemeProvider } from './lib/theme'
+import { I18nProvider, useI18n } from './lib/i18n'
 import { Footer, Nav, PersonaSwitcher } from './components/Shell'
 import { ToastProvider } from './components/ui'
 import Home from './pages/Home'
@@ -34,41 +36,56 @@ function Routes({ path, query }: { path: string; query: URLSearchParams }) {
   return <Home />
 }
 
-const TITLES: [string, string][] = [
-  ['/explore', 'Explore'],
-  ['/project', 'Project'],
-  ['/planners', 'Planners'],
-  ['/planner/', 'Planner'],
-  ['/requests', 'Requests'],
-  ['/request/', 'Request'],
-  ['/messages', 'Messages'],
-  ['/signup', 'Join'],
-  ['/signin', 'Sign in'],
-  ['/verify', 'Verification'],
-  ['/admin', 'Review queue'],
-  ['/dashboard', 'Dashboard'],
-  ['/portfolio', 'New project'],
+const TITLES: [string, string, string][] = [
+  ['/explore', 'Explore', 'استكشف'],
+  ['/project', 'Project', 'تفاصيل الحفل'],
+  ['/planners', 'Planners', 'المخططون'],
+  ['/planner/', 'Planner', 'ملف المخطط'],
+  ['/requests', 'Requests', 'طلبات الحفلات'],
+  ['/request/', 'Request', 'تفاصيل الطلب'],
+  ['/messages', 'Messages', 'الرسائل'],
+  ['/signup', 'Join', 'انضم إلينا'],
+  ['/signin', 'Sign in', 'تسجيل الدخول'],
+  ['/verify', 'Verification', 'التوثيق والاعتماد'],
+  ['/admin', 'Review queue', 'قائمة المراجعة'],
+  ['/dashboard', 'Dashboard', 'لوحة التحكم'],
+  ['/portfolio', 'New project', 'إضافة عمل'],
 ]
 
-export default function App() {
+function AppContent() {
   const { path, query } = useRoute()
+  const { lang, isRtl } = useI18n()
+
   useEffect(() => {
     const t = TITLES.find(([k]) => path.startsWith(k))
-    document.title = t ? `${t[1]} · Fête` : 'Fête · Verified wedding & event planners'
-  }, [path])
+    const titleText = t ? (isRtl ? t[2] : t[1]) : (isRtl ? 'نخبة مخططي الحفلات والأعراس المعتمدين' : 'Verified Luxury Wedding & Event Planners')
+    document.title = `${titleText} · ${isRtl ? 'إتلامو' : 'Etlamo'}`
+  }, [path, isRtl])
+
   const bare = path.startsWith('/messages') || path === '/signup' || path === '/signin'
+
   return (
-    <StoreProvider>
-      <ToastProvider>
-        <div className="flex min-h-screen flex-col">
-          <Nav path={path} />
-          <main className="flex-1">
-            <Routes path={path} query={query} />
-          </main>
-          {!bare && <Footer />}
-          <PersonaSwitcher />
-        </div>
-      </ToastProvider>
-    </StoreProvider>
+    <div className="flex min-h-screen flex-col bg-surface text-ink transition-colors duration-200">
+      <Nav path={path} />
+      <main className="flex-1">
+        <Routes path={path} query={query} />
+      </main>
+      {!bare && <Footer />}
+      <PersonaSwitcher />
+    </div>
+  )
+}
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <I18nProvider>
+        <StoreProvider>
+          <ToastProvider>
+            <AppContent />
+          </ToastProvider>
+        </StoreProvider>
+      </I18nProvider>
+    </ThemeProvider>
   )
 }

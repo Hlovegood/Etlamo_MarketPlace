@@ -19,11 +19,11 @@ export function Button({
         size === 'md' && 'h-10 px-5 text-[15px]',
         size === 'lg' && 'h-12 px-7 text-[17px]',
         variant === 'primary' && 'bg-azure text-white hover:bg-azure-deep shadow-subtle',
-        variant === 'secondary' && 'bg-mist text-ink hover:bg-[#e8e8ed]',
-        variant === 'outline' && 'border border-hairline bg-white text-ink hover:bg-mist',
-        variant === 'ghost' && 'text-link hover:bg-azure/8',
-        variant === 'dark' && 'bg-ink text-white hover:bg-black shadow-subtle',
-        variant === 'danger' && 'bg-[#fbeaea] text-[#c4271b] hover:bg-[#f7dcdc]',
+        variant === 'secondary' && 'bg-mist text-ink hover:bg-[#e8e8ed] dark:bg-card-border/60 dark:text-ink dark:hover:bg-card-border/80',
+        variant === 'outline' && 'border border-hairline bg-white text-ink hover:bg-mist dark:bg-card dark:border-card-border dark:text-ink dark:hover:bg-card-border/40',
+        variant === 'ghost' && 'text-link hover:bg-azure/8 dark:hover:bg-azure/15',
+        variant === 'dark' && 'bg-ink text-white hover:bg-black dark:bg-azure dark:text-white dark:hover:bg-azure-deep shadow-subtle',
+        variant === 'danger' && 'bg-[#fbeaea] text-[#c4271b] hover:bg-[#f7dcdc] dark:bg-[#3a1b1b] dark:text-[#ff6b6b] dark:hover:bg-[#4a2222]',
         className,
       )}
       {...rest}
@@ -106,7 +106,9 @@ export function Chip({
       className={cx(
         'inline-flex items-center gap-1 rounded-full px-3.5 py-1.5 text-[13px] font-medium whitespace-nowrap transition-all duration-150',
         onClick && 'cursor-pointer active:scale-[0.96]',
-        active ? 'bg-ink text-white shadow-subtle' : 'bg-mist text-ink hover:bg-[#e8e8ed]',
+        active
+          ? 'bg-ink text-white dark:bg-azure dark:text-white shadow-subtle'
+          : 'bg-mist text-ink hover:bg-[#e8e8ed] dark:bg-card-border/60 dark:text-ink dark:hover:bg-card-border/90',
         className,
       )}
     >
@@ -125,7 +127,7 @@ export function Segmented<T extends string>({
   onChange: (v: T) => void
 }) {
   return (
-    <div className="inline-flex rounded-xl bg-[#e8e8ed]/70 p-0.5">
+    <div className="inline-flex rounded-xl bg-[#e8e8ed]/70 p-0.5 dark:bg-card-border/60">
       {options.map((o) => (
         <button
           key={o.value}
@@ -133,7 +135,9 @@ export function Segmented<T extends string>({
           onClick={() => onChange(o.value)}
           className={cx(
             'cursor-pointer rounded-[9px] px-3.5 py-1.5 text-[13px] font-medium transition-all duration-150',
-            value === o.value ? 'bg-white text-ink shadow-[0_1px_3px_rgb(0_0_0/0.12)]' : 'text-graphite hover:text-ink',
+            value === o.value
+              ? 'bg-white text-ink shadow-[0_1px_3px_rgb(0_0_0/0.12)] dark:bg-card dark:text-ink dark:shadow-[0_1px_3px_rgb(0_0_0/0.4)]'
+              : 'text-graphite hover:text-ink',
           )}
         >
           {o.label}
@@ -157,12 +161,12 @@ export function Modal({ open, onClose, children, width = 'max-w-lg' }: { open: b
   if (!open) return null
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-6">
-      <div className="absolute inset-0 animate-fade bg-black/40 backdrop-blur-md" onClick={onClose} />
-      <div className={cx('relative max-h-[92vh] w-full animate-pop overflow-y-auto rounded-t-3xl bg-white shadow-lift sm:rounded-3xl', width)}>
+      <div className="absolute inset-0 animate-fade bg-black/50 backdrop-blur-md" onClick={onClose} />
+      <div className={cx('relative max-h-[92vh] w-full animate-pop overflow-y-auto rounded-t-3xl bg-white dark:bg-card dark:border dark:border-card-border text-ink shadow-lift sm:rounded-3xl', width)}>
         <button
           onClick={onClose}
           aria-label="Close"
-          className="absolute top-4 right-4 z-10 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-mist text-graphite transition hover:bg-[#e8e8ed]"
+          className="absolute top-4 right-4 rtl:right-auto rtl:left-4 z-10 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-mist text-graphite transition hover:bg-[#e8e8ed] dark:bg-card-border/60 dark:text-silver dark:hover:bg-card-border/90"
         >
           <X size={16} />
         </button>
@@ -300,9 +304,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
 export function Empty({ icon, title, body, action }: { icon: ReactNode; title: string; body: string; action?: ReactNode }) {
   return (
-    <div className="flex flex-col items-center rounded-3xl bg-mist px-6 py-16 text-center">
-      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-graphite shadow-float">{icon}</div>
-      <h3 className="text-[19px] font-semibold tracking-tight">{title}</h3>
+    <div className="flex flex-col items-center rounded-3xl bg-mist dark:bg-card dark:border dark:border-card-border px-6 py-16 text-center">
+      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white dark:bg-card-border/70 text-graphite shadow-float">{icon}</div>
+      <h3 className="text-[19px] font-semibold tracking-tight text-ink">{title}</h3>
       <p className="mt-1.5 max-w-sm text-[15px] text-graphite">{body}</p>
       {action && <div className="mt-6">{action}</div>}
     </div>

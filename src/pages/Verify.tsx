@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { BadgeCheck, Check, Clock, FileCheck2, FileUp, ShieldCheck, ShieldX, UserRound, XCircle } from 'lucide-react'
 import { navigate } from '../lib/router'
 import { useStore } from '../lib/store'
+import { useI18n } from '../lib/i18n'
 import { SPECIALTIES } from '../lib/seed'
 import { cx, timeAgo } from '../lib/format'
 import type { User, VerificationApplication } from '../lib/types'
@@ -11,6 +12,7 @@ const STEPS = ['Business', 'Credentials', 'Review']
 
 export function Verify() {
   const { me } = useStore()
+  const { t } = useI18n()
   const [editing, setEditing] = useState(false)
 
   if (!me || me.role !== 'planner')
@@ -20,7 +22,7 @@ export function Verify() {
           icon={<ShieldCheck size={24} />}
           title="Verification is for planners"
           body={me ? 'Client accounts don’t need verification.' : 'Create a planner account to apply for the verified badge.'}
-          action={<Button onClick={() => navigate(me ? '/dashboard' : '/signup?role=planner')}>{me ? 'Go to dashboard' : 'Join as a planner'}</Button>}
+          action={<Button onClick={() => navigate(me ? '/dashboard' : '/signup?role=planner')}>{me ? t('nav_dashboard', 'Go to dashboard') : t('how_planner_cta', 'Join as a planner')}</Button>}
         />
       </Container>
     )
@@ -32,6 +34,7 @@ export function Verify() {
 
 function VerifyForm({ me, onDone }: { me: User; onDone: () => void }) {
   const { submitVerification } = useStore()
+  const { t } = useI18n()
   const toast = useToast()
   const prev = me.application
   const [step, setStep] = useState(0)
@@ -62,11 +65,17 @@ function VerifyForm({ me, onDone }: { me: User; onDone: () => void }) {
     onDone()
   }
 
+  const stepLabels = [
+    t('verify_step_business', 'Business'),
+    t('verify_step_credentials', 'Credentials'),
+    t('verify_step_review', 'Review'),
+  ]
+
   return (
     <Container className="max-w-[760px]">
-      <PageHeader eyebrow="Planner verification" title="Get your verified badge." sub="Verified planners can message clients, appear in search and show the badge on every project." />
+      <PageHeader eyebrow={t('nav_verification', 'Planner verification')} title={t('verify_badge_title', 'Get your verified badge.')} sub={t('verify_badge_sub', 'Verified planners can message clients, appear in search and show the badge on every project.')} />
       {me.verification === 'rejected' && me.application?.rejectionReason && (
-        <div className="mb-8 rounded-2xl bg-[#fbeaea] px-5 py-4 text-[14px] text-[#8a1c13]">
+        <div className="mb-8 rounded-2xl bg-[#fbeaea] dark:bg-[#3a1b1b] px-5 py-4 text-[14px] text-[#c4271b] dark:text-[#ff8a8a]">
           <strong>Previous application declined:</strong> {me.application.rejectionReason}
         </div>
       )}
@@ -75,11 +84,11 @@ function VerifyForm({ me, onDone }: { me: User; onDone: () => void }) {
       <ol className="mb-10 flex items-center gap-3">
         {STEPS.map((s, i) => (
           <li key={s} className="flex flex-1 items-center gap-3">
-            <span className={cx('flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[13px] font-semibold transition', i < step ? 'bg-azure text-white' : i === step ? 'bg-ink text-white' : 'bg-mist text-silver')}>
+            <span className={cx('flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[13px] font-semibold transition', i < step ? 'bg-azure text-white' : i === step ? 'bg-ink dark:bg-azure text-white' : 'bg-mist dark:bg-card-border/60 text-silver')}>
               {i < step ? <Check size={15} strokeWidth={3} /> : i + 1}
             </span>
-            <span className={cx('text-[14px] font-medium', i <= step ? 'text-ink' : 'text-silver')}>{s}</span>
-            {i < STEPS.length - 1 && <span className={cx('h-px flex-1', i < step ? 'bg-azure' : 'bg-hairline')} />}
+            <span className={cx('text-[14px] font-medium', i <= step ? 'text-ink' : 'text-silver')}>{stepLabels[i] ?? s}</span>
+            {i < STEPS.length - 1 && <span className={cx('h-px flex-1', i < step ? 'bg-azure' : 'bg-hairline dark:bg-card-border')} />}
           </li>
         ))}
       </ol>
@@ -97,7 +106,7 @@ function VerifyForm({ me, onDone }: { me: User; onDone: () => void }) {
               <Field label="Website or Instagram" value={f.website} onChange={(v) => set('website', v)} placeholder="averyevents.com" />
             </div>
             <div>
-              <label className="label">Specialties</label>
+              <label className="label">{t('specialties_aesthetic', 'Specialties')}</label>
               <div className="flex flex-wrap gap-2">
                 {SPECIALTIES.map((s) => {
                   const on = f.specialties.includes(s)
@@ -124,8 +133,8 @@ function VerifyForm({ me, onDone }: { me: User; onDone: () => void }) {
               <Upload label="Government-issued ID" hint="Passport or driver’s licence" value={f.idFileName} onChange={(v) => set('idFileName', v)} />
               <Upload label="Liability insurance" hint="Certificate of insurance" value={f.insuranceFileName} onChange={(v) => set('insuranceFileName', v)} />
             </div>
-            <div className="rounded-3xl bg-mist p-5">
-              <p className="text-[15px] font-semibold">Past client reference</p>
+            <div className="rounded-3xl bg-mist dark:bg-card dark:border dark:border-card-border p-5">
+              <p className="text-[15px] font-semibold text-ink">Past client reference</p>
               <p className="mt-0.5 text-[13px] text-graphite">We’ll send them a short, two-question email.</p>
               <div className="mt-4 grid gap-4 sm:grid-cols-2">
                 <Field label="Name & event" value={f.referenceName} onChange={(v) => set('referenceName', v)} placeholder="Nadia Torres (wedding, 2025)" />
@@ -138,17 +147,17 @@ function VerifyForm({ me, onDone }: { me: User; onDone: () => void }) {
         {step === 2 && <ApplicationSummary app={{ ...f, submittedAt: Date.now() }} />}
       </div>
 
-      <div className="mt-10 flex items-center justify-between border-t border-black/[0.06] pt-6">
+      <div className="mt-10 flex items-center justify-between border-t border-black/[0.06] dark:border-card-border pt-6">
         <Button variant="secondary" onClick={() => (step === 0 ? navigate('/dashboard') : setStep(step - 1))}>
-          {step === 0 ? 'Finish later' : 'Back'}
+          {step === 0 ? t('verify_finish_later', 'Finish later') : t('verify_back', 'Back')}
         </Button>
         {step < 2 ? (
           <Button size="lg" disabled={!stepValid} onClick={() => setStep(step + 1)}>
-            Continue
+            {t('verify_continue', 'Continue')}
           </Button>
         ) : (
           <Button size="lg" onClick={submit}>
-            <ShieldCheck size={17} /> Submit for review
+            <ShieldCheck size={17} /> {t('verify_submit', 'Submit for review')}
           </Button>
         )}
       </div>
@@ -167,10 +176,10 @@ function Field({ label, value, onChange, placeholder }: { label: string; value: 
 
 function Upload({ label, hint, value, onChange }: { label: string; hint: string; value: string; onChange: (v: string) => void }) {
   return (
-    <label className={cx('flex cursor-pointer flex-col items-center justify-center rounded-3xl border-2 border-dashed px-5 py-8 text-center transition', value ? 'border-azure/40 bg-azure/[0.04]' : 'border-hairline hover:border-silver')}>
+    <label className={cx('flex cursor-pointer flex-col items-center justify-center rounded-3xl border-2 border-dashed px-5 py-8 text-center transition', value ? 'border-azure/40 bg-azure/[0.04]' : 'border-hairline dark:border-card-border hover:border-silver')}>
       <input type="file" accept="image/*,.pdf" className="sr-only" onChange={(e) => e.target.files?.[0] && onChange(e.target.files[0].name)} />
       {value ? <FileCheck2 size={26} className="text-azure" /> : <FileUp size={26} className="text-silver" />}
-      <span className="mt-3 text-[15px] font-semibold">{label}</span>
+      <span className="mt-3 text-[15px] font-semibold text-ink">{label}</span>
       <span className="mt-0.5 max-w-full truncate text-[13px] text-graphite">{value || hint}</span>
       <span className="mt-2 text-[13px] text-link">{value ? 'Replace file' : 'Choose file'}</span>
     </label>
@@ -190,21 +199,22 @@ export function ApplicationSummary({ app }: { app: VerificationApplication }) {
     ['Reference', `${app.referenceName} · ${app.referenceContact}`],
   ]
   return (
-    <div className="overflow-hidden rounded-3xl border border-black/[0.07]">
-      <dl className="divide-y divide-black/[0.06]">
+    <div className="overflow-hidden rounded-3xl border border-black/[0.07] dark:border-card-border bg-white dark:bg-card">
+      <dl className="divide-y divide-black/[0.06] dark:divide-card-border">
         {rows.map(([k, v]) => (
           <div key={k} className="grid grid-cols-[130px_1fr] gap-4 px-5 py-3.5 text-[14px]">
             <dt className="text-graphite">{k}</dt>
-            <dd className="font-medium break-words">{v}</dd>
+            <dd className="font-medium break-words text-ink">{v}</dd>
           </div>
         ))}
       </dl>
-      <p className="bg-mist px-5 py-4 text-[14px] leading-relaxed text-[#424245]">{app.bio}</p>
+      <p className="bg-mist dark:bg-surface px-5 py-4 text-[14px] leading-relaxed text-graphite">{app.bio}</p>
     </div>
   )
 }
 
 function VerifyStatus({ me, onResubmit }: { me: User; onResubmit: () => void }) {
+  const { t } = useI18n()
   const status = me.verification!
   const app = me.application
   const stages = [
@@ -215,25 +225,25 @@ function VerifyStatus({ me, onResubmit }: { me: User; onResubmit: () => void }) 
   return (
     <Container className="max-w-[760px]">
       <div className="pt-16 pb-6 text-center">
-        <div className={cx('mx-auto flex h-20 w-20 animate-pop items-center justify-center rounded-full', status === 'verified' ? 'bg-azure/10' : status === 'pending' ? 'bg-[#fff4e5]' : 'bg-[#fbeaea]')}>
+        <div className={cx('mx-auto flex h-20 w-20 animate-pop items-center justify-center rounded-full', status === 'verified' ? 'bg-azure/10' : status === 'pending' ? 'bg-[#fff4e5] dark:bg-[#342410]' : 'bg-[#fbeaea] dark:bg-[#3a1b1b]')}>
           {status === 'verified' ? <BadgeCheck size={40} className="text-azure" /> : status === 'pending' ? <Clock size={36} className="text-amber" /> : <ShieldX size={36} className="text-[#c4271b]" />}
         </div>
-        <h1 className="mt-6 text-[40px] leading-tight font-semibold tracking-[-0.03em] md:text-[48px]">
-          {status === 'verified' ? 'You’re verified.' : status === 'pending' ? 'Application in review.' : 'Not approved yet.'}
+        <h1 className="mt-6 text-[40px] leading-tight font-semibold tracking-[-0.03em] md:text-[48px] text-ink">
+          {status === 'verified' ? t('verify_status_verified', 'You’re verified.') : status === 'pending' ? t('verify_status_pending', 'Application in review.') : t('verify_status_rejected', 'Not approved yet.')}
         </h1>
         <p className="mx-auto mt-3 max-w-md text-[17px] text-graphite">
           {status === 'verified'
-            ? 'Your profile and projects are public, and you can now message clients directly.'
+            ? t('verify_sub_verified', 'Your profile and projects are public, and you can now message clients directly.')
             : status === 'pending'
-              ? 'Our trust team is checking your details. Meanwhile you can keep building your portfolio.'
-              : 'Update your application with the requested changes and resubmit.'}
+              ? t('verify_sub_pending', 'Our trust team is checking your details. Meanwhile you can keep building your portfolio.')
+              : t('verify_sub_rejected', 'Update your application with the requested changes and resubmit.')}
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
-          {status === 'verified' && <Button size="lg" onClick={() => navigate('/requests')}>Browse client requests</Button>}
-          {status === 'pending' && <Button size="lg" onClick={() => navigate('/portfolio/new')}>Add a project</Button>}
+          {status === 'verified' && <Button size="lg" onClick={() => navigate('/requests')}>{t('hero_cta_requests', 'Browse client requests')}</Button>}
+          {status === 'pending' && <Button size="lg" onClick={() => navigate('/portfolio/new')}>{t('dash_add_project', 'Add a project')}</Button>}
           {status === 'rejected' && <Button size="lg" onClick={onResubmit}>Update & resubmit</Button>}
           <Button size="lg" variant="secondary" onClick={() => navigate(`/planner/${me.id}`)}>
-            View profile
+            {t('nav_my_profile', 'View profile')}
           </Button>
         </div>
       </div>
@@ -241,12 +251,12 @@ function VerifyStatus({ me, onResubmit }: { me: User; onResubmit: () => void }) 
       <ol className="mx-auto mt-10 max-w-md space-y-0">
         {stages.map((s, i) => (
           <li key={s.t} className="relative flex gap-4 pb-8 last:pb-0">
-            {i < stages.length - 1 && <span className={cx('absolute top-8 left-[15px] h-[calc(100%-2rem)] w-0.5', s.done ? 'bg-azure' : 'bg-hairline')} />}
-            <span className={cx('flex h-8 w-8 shrink-0 items-center justify-center rounded-full', s.failed ? 'bg-[#c4271b] text-white' : s.done ? 'bg-azure text-white' : 'border-2 border-hairline bg-white')}>
+            {i < stages.length - 1 && <span className={cx('absolute top-8 left-[15px] rtl:left-auto rtl:right-[15px] h-[calc(100%-2rem)] w-0.5', s.done ? 'bg-azure' : 'bg-hairline dark:bg-card-border')} />}
+            <span className={cx('flex h-8 w-8 shrink-0 items-center justify-center rounded-full', s.failed ? 'bg-[#c4271b] text-white' : s.done ? 'bg-azure text-white' : 'border-2 border-hairline dark:border-card-border bg-white dark:bg-card')}>
               {s.failed ? <XCircle size={16} /> : s.done ? <Check size={15} strokeWidth={3} /> : null}
             </span>
             <div className="pt-1">
-              <p className="text-[15px] font-semibold">{s.t}</p>
+              <p className="text-[15px] font-semibold text-ink">{s.t}</p>
               <p className="text-[13px] text-graphite">{s.d}</p>
             </div>
           </li>
@@ -254,13 +264,13 @@ function VerifyStatus({ me, onResubmit }: { me: User; onResubmit: () => void }) 
       </ol>
 
       {status === 'rejected' && app?.rejectionReason && (
-        <div className="mx-auto mt-8 max-w-md rounded-2xl bg-[#fbeaea] px-5 py-4 text-[14px] text-[#8a1c13]">
+        <div className="mx-auto mt-8 max-w-md rounded-2xl bg-[#fbeaea] dark:bg-[#3a1b1b] px-5 py-4 text-[14px] text-[#c4271b]">
           <strong>Reviewer note:</strong> {app.rejectionReason}
         </div>
       )}
 
       {status === 'pending' && (
-        <div className="mx-auto mt-12 flex max-w-md items-center gap-3 rounded-2xl border border-dashed border-hairline px-5 py-4 text-[13px] text-graphite">
+        <div className="mx-auto mt-12 flex max-w-md items-center gap-3 rounded-2xl border border-dashed border-hairline dark:border-card-border px-5 py-4 text-[13px] text-graphite">
           <UserRound size={18} className="shrink-0" />
           <span className="flex-1">Prototype tip: sign in as the trust team admin to approve this application.</span>
           <button onClick={() => navigate('/admin')} className="cursor-pointer font-medium text-link hover:underline">
@@ -283,6 +293,7 @@ function VerifyStatus({ me, onResubmit }: { me: User; onResubmit: () => void }) 
 
 export function Admin() {
   const { db, me, signInAs, reviewVerification } = useStore()
+  const { t } = useI18n()
   const toast = useToast()
   const [tab, setTab] = useState<'pending' | 'reviewed'>('pending')
   const [rejecting, setRejecting] = useState<User | null>(null)
@@ -301,9 +312,9 @@ export function Admin() {
     )
 
   const apps = db.users
-    .filter((u) => u.role === 'planner' && u.application)
-    .filter((u) => (tab === 'pending' ? u.verification === 'pending' : u.verification !== 'pending'))
-    .sort((a, b) => b.application!.submittedAt - a.application!.submittedAt)
+  .filter((u) => u.role === 'planner' && u.application)
+  .filter((u) => (tab === 'pending' ? u.verification === 'pending' : u.verification !== 'pending'))
+  .sort((a, b) => b.application!.submittedAt - a.application!.submittedAt)
   const pendingCount = db.users.filter((u) => u.verification === 'pending').length
 
   return (
@@ -313,10 +324,10 @@ export function Admin() {
         title="Verification queue"
         sub={`${pendingCount} application${pendingCount === 1 ? '' : 's'} waiting for review.`}
         right={
-          <div className="inline-flex rounded-[10px] bg-[#e8e8ed]/70 p-0.5">
-            {(['pending', 'reviewed'] as const).map((t) => (
-              <button key={t} onClick={() => setTab(t)} className={cx('cursor-pointer rounded-lg px-4 py-1.5 text-[13px] font-medium capitalize', tab === t ? 'bg-white shadow-[0_1px_3px_rgb(0_0_0/0.12)]' : 'text-graphite')}>
-                {t}
+          <div className="inline-flex rounded-[10px] bg-[#e8e8ed]/70 dark:bg-card-border/60 p-0.5">
+            {(['pending', 'reviewed'] as const).map((tItem) => (
+              <button key={tItem} onClick={() => setTab(tItem)} className={cx('cursor-pointer rounded-lg px-4 py-1.5 text-[13px] font-medium capitalize', tab === tItem ? 'bg-white dark:bg-card text-ink shadow-[0_1px_3px_rgb(0_0_0/0.12)]' : 'text-graphite')}>
+                {tItem}
               </button>
             ))}
           </div>
@@ -327,11 +338,11 @@ export function Admin() {
       ) : (
         <div className="space-y-5">
           {apps.map((u) => (
-            <article key={u.id} className="animate-rise rounded-[28px] border border-black/[0.07] p-6">
+            <article key={u.id} className="animate-rise rounded-[28px] border border-black/[0.07] dark:border-card-border bg-white dark:bg-card p-6">
               <div className="mb-5 flex flex-wrap items-center gap-4">
                 <Avatar user={u} size={48} />
                 <div className="min-w-0 flex-1">
-                  <p className="flex items-center gap-1.5 text-[19px] font-semibold tracking-tight">
+                  <p className="flex items-center gap-1.5 text-[19px] font-semibold tracking-tight text-ink">
                     {u.application!.business} {u.verification === 'verified' && <Verified />}
                   </p>
                   <p className="text-[13px] text-graphite">
@@ -353,7 +364,7 @@ export function Admin() {
                     </Button>
                   </div>
                 ) : (
-                  <span className={cx('rounded-full px-3 py-1 text-[13px] font-medium', u.verification === 'verified' ? 'bg-azure/10 text-azure' : 'bg-[#fbeaea] text-[#c4271b]')}>
+                  <span className={cx('rounded-full px-3 py-1 text-[13px] font-medium', u.verification === 'verified' ? 'bg-azure/10 text-azure' : 'bg-[#fbeaea] dark:bg-[#3a1b1b] text-[#c4271b]')}>
                     {u.verification === 'verified' ? 'Approved' : 'Declined'}
                   </span>
                 )}
@@ -366,12 +377,12 @@ export function Admin() {
 
       <Modal open={!!rejecting} onClose={() => setRejecting(null)} width="max-w-md">
         <div className="p-7">
-          <h3 className="text-[22px] font-semibold tracking-tight">Decline application</h3>
+          <h3 className="text-[22px] font-semibold tracking-tight text-ink">Decline application</h3>
           <p className="mt-1 text-[14px] text-graphite">The planner will see this note and can resubmit.</p>
           <textarea rows={4} autoFocus className="field mt-5 resize-none" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="e.g. The insurance certificate has expired. Please upload a current one." />
           <div className="mt-6 flex justify-end gap-2">
             <Button variant="secondary" onClick={() => setRejecting(null)}>
-              Cancel
+              {t('contact_cancel', 'Cancel')}
             </Button>
             <Button
               variant="dark"

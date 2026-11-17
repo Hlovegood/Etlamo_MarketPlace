@@ -2,12 +2,14 @@ import { useState } from 'react'
 import { Check, ImagePlus, Lock, Upload, X } from 'lucide-react'
 import { navigate } from '../lib/router'
 import { useStore } from '../lib/store'
+import { useI18n } from '../lib/i18n'
 import { CATEGORIES, SAMPLE_LIBRARY } from '../lib/seed'
 import { cx, readImage } from '../lib/format'
 import { Button, Chip, Container, Empty, PageHeader, useToast } from '../components/ui'
 
 export default function NewProject() {
   const { me, addProject } = useStore()
+  const { t } = useI18n()
   const toast = useToast()
   const [f, setF] = useState({ title: '', category: 'Wedding', location: '', date: '', guests: '', description: '', tags: '' })
   const [images, setImages] = useState<string[]>([])
@@ -16,7 +18,7 @@ export default function NewProject() {
   if (me?.role !== 'planner')
     return (
       <Container className="py-24">
-        <Empty icon={<Lock size={24} />} title="Portfolios are for planners" body="Create a planner account to publish your work." action={<Button onClick={() => navigate(me ? '/dashboard' : '/signup?role=planner')}>{me ? 'Go to dashboard' : 'Join as a planner'}</Button>} />
+        <Empty icon={<Lock size={24} />} title="Portfolios are for planners" body="Create a planner account to publish your work." action={<Button onClick={() => navigate(me ? '/dashboard' : '/signup?role=planner')}>{me ? t('nav_dashboard', 'Go to dashboard') : t('how_planner_cta', 'Join as a planner')}</Button>} />
       </Container>
     )
 
@@ -45,7 +47,7 @@ export default function NewProject() {
       guests: Number(f.guests) || 0,
       description: f.description.trim(),
       images,
-      tags: f.tags.split(',').map((t) => t.trim()).filter(Boolean),
+      tags: f.tags.split(',').map((item) => item.trim()).filter(Boolean),
     })
     toast(me.verification === 'verified' ? 'Project published' : 'Project saved. It goes live once you’re verified.')
     navigate(`/project/${p.id}`)
@@ -53,9 +55,11 @@ export default function NewProject() {
 
   return (
     <Container className="max-w-[880px]">
-      <PageHeader eyebrow="New project" title="Show your work." sub="Big, beautiful images do the talking. Add a few words about the brief and how you delivered it." />
+      <PageHeader eyebrow={t('nav_add_project', 'New project')} title="Show your work." sub="Big, beautiful images do the talking. Add a few words about the brief and how you delivered it." />
       {me.verification !== 'verified' && (
-        <p className="-mt-2 mb-8 rounded-2xl bg-[#fff4e5] px-5 py-3.5 text-[14px] text-[#7a4100]">You can build your portfolio now. Projects appear in Explore once your verification is approved.</p>
+        <p className="-mt-2 mb-8 rounded-2xl bg-[#fff4e5] dark:bg-[#342410] dark:border dark:border-[#5a3e1a] px-5 py-3.5 text-[14px] text-[#7a4100] dark:text-[#ffbe76]">
+          {t('dash_keep_adding_projects', 'You can build your portfolio now. Projects appear in Explore once your verification is approved.')}
+        </p>
       )}
       <form onSubmit={submit} className="space-y-8">
         <div>
@@ -63,9 +67,9 @@ export default function NewProject() {
           {images.length > 0 && (
             <div className="mb-4 grid grid-cols-3 gap-3 sm:grid-cols-4">
               {images.map((src, i) => (
-                <div key={src.slice(-40) + i} className="group relative aspect-[4/3] overflow-hidden rounded-2xl bg-mist">
+                <div key={src.slice(-40) + i} className="group relative aspect-[4/3] overflow-hidden rounded-2xl bg-mist dark:bg-card-border/60">
                   <img src={src} alt="" className="h-full w-full object-cover" />
-                  {i === 0 && <span className="absolute top-2 left-2 rounded-full bg-white/90 px-2 py-0.5 text-[11px] font-semibold">Cover</span>}
+                  {i === 0 && <span className="absolute top-2 left-2 rounded-full bg-white/90 dark:bg-black/90 px-2 py-0.5 text-[11px] font-semibold text-ink">Cover</span>}
                   <button type="button" onClick={() => setImages((xs) => xs.filter((_, j) => j !== i))} aria-label="Remove" className="absolute top-2 right-2 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-black/60 text-white opacity-0 transition group-hover:opacity-100">
                     <X size={13} />
                   </button>
@@ -73,10 +77,10 @@ export default function NewProject() {
               ))}
             </div>
           )}
-          <label className="flex cursor-pointer flex-col items-center justify-center rounded-3xl border-2 border-dashed border-hairline px-6 py-10 text-center transition hover:border-azure">
+          <label className="flex cursor-pointer flex-col items-center justify-center rounded-3xl border-2 border-dashed border-hairline dark:border-card-border px-6 py-10 text-center transition hover:border-azure">
             <input type="file" accept="image/*" multiple className="sr-only" onChange={(e) => upload(e.target.files)} />
             <Upload size={26} className="text-silver" />
-            <span className="mt-3 text-[15px] font-semibold">{busy ? 'Processing…' : 'Upload photos'}</span>
+            <span className="mt-3 text-[15px] font-semibold text-ink">{busy ? 'Processing…' : 'Upload photos'}</span>
             <span className="text-[13px] text-graphite">JPG or PNG, up to 6 at a time</span>
           </label>
           <p className="mt-5 mb-3 flex items-center gap-1.5 text-[13px] font-medium text-graphite">
@@ -135,9 +139,9 @@ export default function NewProject() {
           <label className="label" htmlFor="tags">Tags <span className="font-normal text-silver">· comma separated</span></label>
           <input id="tags" className="field" value={f.tags} onChange={(e) => setF({ ...f, tags: e.target.value })} placeholder="Garden, Black tie, Candlelight" />
         </div>
-        <div className="flex justify-end gap-2 border-t border-black/[0.06] pt-6">
+        <div className="flex justify-end gap-2 border-t border-black/[0.06] dark:border-card-border pt-6">
           <Button type="button" variant="secondary" size="lg" onClick={() => history.back()}>
-            Cancel
+            {t('contact_cancel', 'Cancel')}
           </Button>
           <Button type="submit" size="lg" disabled={!valid}>
             {me.verification === 'verified' ? 'Publish project' : 'Save project'}

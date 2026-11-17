@@ -45,7 +45,7 @@ export function createSeed(): DB {
       {
         id: 'admin',
         role: 'admin',
-        name: 'Fête Trust Team',
+        name: 'Etlamo Trust Team',
         email: 'admin@demo.com',
         password: 'admin',
         location: 'Cupertino, CA',

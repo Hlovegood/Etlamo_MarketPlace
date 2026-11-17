@@ -1,63 +1,105 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
 @import 'tailwindcss';
 
 @theme {
   --font-sans:
-    -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Inter', 'Helvetica Neue', Helvetica, Arial,
-    sans-serif;
-  --font-serif:
-    'Cormorant Garamond', Georgia, Cambria, 'Times New Roman', Times, serif;
-  --color-ink: #1d1d1f;
-  --color-ink-deep: #000000;
-  --color-graphite: #6e6e73;
-  --color-silver: #86868b;
-  --color-hairline: #d2d2d7;
-  --color-mist: #f5f5f7;
-  --color-mist-light: #fbfbfd;
-  --color-azure: #0071e3;
-  --color-azure-deep: #0062c4;
-  --color-azure-tint: #e8f2fe;
-  --color-link: #0066cc;
-  --color-success: #1d8a4e;
-  --color-success-bg: #eafaf1;
-  --color-amber: #b25000;
-  --color-amber-bg: #fff8eb;
-  --color-rose: #e11d48;
-  --shadow-subtle: 0 1px 3px 0 rgb(0 0 0 / 0.04), 0 1px 2px -1px rgb(0 0 0 / 0.02);
-  --shadow-float: 0 4px 24px -6px rgb(0 0 0 / 0.08), 0 1px 2px rgb(0 0 0 / 0.04);
-  --shadow-lift: 0 20px 48px -14px rgb(0 0 0 / 0.16), 0 1px 3px rgb(0 0 0 / 0.04);
-  --shadow-glow: 0 0 28px -4px rgb(0 113 227 / 0.25);
+    -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Inter', 'IBM Plex Sans Arabic', 'Cairo',
+    Helvetica, Arial, sans-serif;
+  --font-arabic: 'IBM Plex Sans Arabic', 'Cairo', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+
+  --color-surface: var(--surface);
+  --color-surface-secondary: var(--surface-secondary);
+  --color-ink: var(--ink);
+  --color-graphite: var(--graphite);
+  --color-silver: var(--silver);
+  --color-hairline: var(--hairline);
+  --color-mist: var(--mist);
+  --color-card: var(--card-bg);
+  --color-card-border: var(--card-border);
+  --color-azure: var(--azure);
+  --color-azure-deep: var(--azure-deep);
+  --color-azure-tint: var(--azure-tint);
+  --color-amber: var(--amber);
+  --color-amber-bg: var(--amber-bg);
+
+  --shadow-subtle: var(--shadow-subtle);
+  --shadow-float: var(--shadow-float);
+  --shadow-lift: var(--shadow-lift);
+
   --animate-rise: rise 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
   --animate-fade: fade 0.25s ease-out both;
   --animate-pop: pop 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
 
-  @keyframes rise {
-    from {
-      opacity: 0;
-      transform: translateY(16px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+:root {
+  --surface: #ffffff;
+  --surface-secondary: #fbfbfd;
+  --ink: #1d1d1f;
+  --graphite: #6e6e73;
+  --silver: #86868b;
+  --hairline: #e2e2e7;
+  --mist: #f5f5f7;
+  --card-bg: #ffffff;
+  --card-border: rgba(0, 0, 0, 0.07);
+  --azure: #0071e3;
+  --azure-deep: #0062c4;
+  --azure-tint: #e8f2fe;
+  --amber: #b25000;
+  --amber-bg: #fff8eb;
+  --shadow-subtle: 0 1px 3px 0 rgb(0 0 0 / 0.04), 0 1px 2px -1px rgb(0 0 0 / 0.02);
+  --shadow-float: 0 4px 24px -6px rgb(0 0 0 / 0.08), 0 1px 2px rgb(0 0 0 / 0.04);
+  --shadow-lift: 0 20px 48px -14px rgb(0 0 0 / 0.16);
+}
+
+.dark {
+  --surface: #0b0b0e;
+  --surface-secondary: #131317;
+  --ink: #f5f5f7;
+  --graphite: #a1a1a6;
+  --silver: #6e6e73;
+  --hairline: #26262b;
+  --mist: #18181c;
+  --card-bg: #141418;
+  --card-border: rgba(255, 255, 255, 0.08);
+  --azure: #2997ff;
+  --azure-deep: #0077ed;
+  --azure-tint: rgba(41, 151, 255, 0.16);
+  --amber: #f59e0b;
+  --amber-bg: rgba(245, 158, 11, 0.16);
+  --shadow-subtle: 0 1px 3px 0 rgb(0 0 0 / 0.4);
+  --shadow-float: 0 6px 28px -6px rgb(0 0 0 / 0.6);
+  --shadow-lift: 0 20px 48px -14px rgb(0 0 0 / 0.85);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
   }
-  @keyframes fade {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  @keyframes pop {
-    from {
-      opacity: 0;
-      transform: scale(0.96) translateY(8px);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1) translateY(0);
-    }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
   }
 }
 
@@ -73,21 +115,41 @@
     scroll-behavior: smooth;
   }
   body {
-    @apply bg-white font-sans text-ink;
+    background-color: var(--surface);
+    color: var(--ink);
     letter-spacing: -0.01em;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
+
+  [dir="rtl"] body {
+    font-family: var(--font-arabic);
+    letter-spacing: 0;
+  }
+
+  [dir="rtl"] h1,
+  [dir="rtl"] h2,
+  [dir="rtl"] h3,
+  [dir="rtl"] h4 {
+    letter-spacing: 0;
+    line-height: 1.25;
+  }
+
   ::selection {
-    background: rgb(0 113 227 / 0.18);
+    background: rgb(0 113 227 / 0.25);
   }
+
   input,
   textarea,
   select,
   button {
-    @apply outline-none;
+    outline: none;
   }
+
   :focus-visible {
-    @apply ring-4 ring-azure/20 outline-none;
+    outline: 2px solid var(--azure);
+    outline-offset: 2px;
   }
+
   @media (prefers-reduced-motion: reduce) {
     *,
     ::before,
@@ -102,15 +164,42 @@
 
 @layer components {
   .field {
-    @apply w-full rounded-2xl border border-hairline bg-white px-4 py-3 text-[15px] text-ink transition-all duration-200 placeholder:text-silver hover:border-silver/80 focus:border-azure focus:ring-4 focus:ring-azure/15;
+    width: 100%;
+    border-radius: 1rem;
+    border: 1px solid var(--hairline);
+    background-color: var(--card-bg);
+    padding: 0.75rem 1rem;
+    font-size: 15px;
+    color: var(--ink);
+    transition: all 0.2s ease;
+  }
+  .field::placeholder {
+    color: var(--silver);
+  }
+  .field:focus {
+    border-color: var(--azure);
+    box-shadow: 0 0 0 4px var(--azure-tint);
   }
   .label {
-    @apply mb-1.5 block text-[13px] font-medium text-graphite;
+    display: block;
+    margin-bottom: 0.375rem;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--graphite);
   }
   .glass-nav {
-    @apply border-b border-black/[0.07] bg-white/80 backdrop-blur-2xl backdrop-saturate-180;
+    border-bottom: 1px solid var(--card-border);
+    background-color: color-mix(in srgb, var(--surface) 80%, transparent);
+    backdrop-filter: blur(24px) saturate(180%);
   }
   .glass-card {
-    @apply rounded-3xl border border-black/[0.06] bg-white/90 backdrop-blur-xl shadow-subtle hover:shadow-float transition-all duration-300;
+    border-radius: 1.5rem;
+    border: 1px solid var(--card-border);
+    background-color: var(--card-bg);
+    box-shadow: var(--shadow-subtle);
+    transition: all 0.3s ease;
+  }
+  .glass-card:hover {
+    box-shadow: var(--shadow-float);
   }
 }

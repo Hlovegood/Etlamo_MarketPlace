@@ -2,23 +2,29 @@ import { useState } from 'react'
 import { ArrowRight, Check, ChevronLeft, PartyPopper, Sparkles } from 'lucide-react'
 import { Link, navigate } from '../lib/router'
 import { useStore } from '../lib/store'
+import { useI18n } from '../lib/i18n'
 import { img } from '../lib/seed'
 import { cx } from '../lib/format'
 import type { Role } from '../lib/types'
 import { Avatar, Button, useToast } from '../components/ui'
 
 function AuthFrame({ children, image }: { children: React.ReactNode; image: string }) {
+  const { isRtl } = useI18n()
   return (
-    <div className="grid min-h-[calc(100vh-3.5rem)] lg:grid-cols-[1fr_minmax(0,46%)]">
+    <div className="grid min-h-[calc(100vh-4rem)] lg:grid-cols-[1fr_minmax(0,46%)] bg-surface text-ink transition-colors">
       <div className="flex items-start justify-center px-5 py-12 md:items-center md:py-16">
         <div className="w-full max-w-[440px] animate-rise">{children}</div>
       </div>
-      <div className="relative hidden overflow-hidden lg:block">
+      <div className="relative hidden overflow-hidden lg:block border-l border-card-border">
         <img src={image} alt="" className="absolute inset-0 h-full w-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-        <p className="absolute right-10 bottom-10 left-10 text-[28px] leading-tight font-semibold tracking-tight text-white">
-          “We found our planner in a weekend. She understood us from the first message.”
-          <span className="mt-3 block text-[15px] font-normal text-white/75">Priya & Sam, married in Napa</span>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+        <p className="absolute right-10 bottom-10 left-10 text-[26px] leading-tight font-semibold tracking-tight text-white drop-shadow-md">
+          {isRtl
+            ? '“وجدنا المخطط المثالي في عطلة نهاية الأسبوع. فهمت طابعنا وتطلعاتنا من أول رسالة.”'
+            : '“We found our planner in a weekend. She understood us from the first message.”'}
+          <span className="mt-3 block text-[15px] font-normal text-white/80">
+            {isRtl ? 'بريا وسام · عقد قران في وادي نابا' : 'Priya & Sam, married in Napa'}
+          </span>
         </p>
       </div>
     </div>
@@ -27,6 +33,7 @@ function AuthFrame({ children, image }: { children: React.ReactNode; image: stri
 
 export function SignUp({ query }: { query: URLSearchParams }) {
   const { signUp } = useStore()
+  const { isRtl } = useI18n()
   const toast = useToast()
   const preset = query.get('role') as Role | null
   const next = query.get('next')
@@ -49,10 +56,10 @@ export function SignUp({ query }: { query: URLSearchParams }) {
     const res = signUp({ role, name: f.name, email: f.email, password: f.password, business: f.business, location: f.location })
     if (typeof res === 'string') return setError(res)
     if (role === 'planner') {
-      toast('Account created. Let’s get you verified.')
+      toast(isRtl ? 'تم إنشاء الحساب. فلنبدأ إجراءات التوثيق والاعتماد.' : 'Account created. Let’s get you verified.')
       navigate('/verify')
     } else {
-      toast('Welcome to Fête')
+      toast(isRtl ? 'أهلاً بك في إتلامو' : 'Welcome to Etlamo')
       navigate(next || '/dashboard')
     }
   }
@@ -61,76 +68,83 @@ export function SignUp({ query }: { query: URLSearchParams }) {
     <AuthFrame image={img(role === 'planner' ? '1785672951683-dba4e3867b8a' : '1764380754282-194c847f6d4c', 1600)}>
       {step === 1 ? (
         <>
-          <h1 className="text-[40px] leading-[1.05] font-semibold tracking-[-0.03em]">Join Fête</h1>
-          <p className="mt-2 text-[17px] text-graphite">First, tell us how you’ll use it.</p>
+          <h1 className="text-[40px] leading-[1.05] font-semibold tracking-[-0.03em] text-ink">
+            {isRtl ? 'انضم إلى إتلامو' : 'Join Etlamo'}
+          </h1>
+          <p className="mt-2 text-[17px] text-graphite">
+            {isRtl ? 'أولاً، أخبرنا كيف تخطط لاستخدام المنصة.' : 'First, tell us how you’ll use it.'}
+          </p>
           <div className="mt-8 space-y-3" role="radiogroup">
             <RoleCard
               selected={role === 'client'}
               onClick={() => setRole('client')}
               icon={<PartyPopper size={22} />}
-              title="I’m planning an event"
-              body="Post requests, browse portfolios and chat with verified planners."
+              title={isRtl ? 'أنا أخطط لمناسبة أو حفل' : 'I’m planning an event'}
+              body={isRtl ? 'انشر طلباتك، تصفح معارض الأعمال، وتواصل مع المخططين المعتمدين.' : 'Post requests, browse portfolios and chat with verified planners.'}
             />
             <RoleCard
               selected={role === 'planner'}
               onClick={() => setRole('planner')}
               icon={<Sparkles size={22} />}
-              title="I’m a wedding or event planner"
-              body="Showcase your portfolio, get verified and reply to client requests."
+              title={isRtl ? 'أنا منظم أو مخطط حفلات وأعراس' : 'I’m a wedding or event planner'}
+              body={isRtl ? 'اعرض سوابق أعمالك الفاخرة، احصل على شارة التوثيق، وتواصل مع العملاء.' : 'Showcase your portfolio, get verified and reply to client requests.'}
             />
           </div>
           <Button size="lg" className="mt-8 w-full" disabled={!role} onClick={() => setStep(2)}>
-            Continue
+            {isRtl ? 'متابعة' : 'Continue'}
           </Button>
           <p className="mt-6 text-center text-[14px] text-graphite">
-            Already have an account?{' '}
-            <Link to={`/signin${next ? `?next=${encodeURIComponent(next)}` : ''}`} className="text-link hover:underline">
-              Sign in
+            {isRtl ? 'لديك حساب بالفعل؟' : 'Already have an account?'}{' '}
+            <Link to={`/signin${next ? `?next=${encodeURIComponent(next)}` : ''}`} className="text-azure hover:underline font-medium">
+              {isRtl ? 'تسجيل الدخول' : 'Sign in'}
             </Link>
           </p>
         </>
       ) : (
         <form onSubmit={submit}>
-          <button type="button" onClick={() => setStep(1)} className="mb-6 flex cursor-pointer items-center gap-0.5 text-[15px] text-link hover:underline">
-            <ChevronLeft size={17} /> Change account type
+          <button type="button" onClick={() => setStep(1)} className="mb-6 flex cursor-pointer items-center gap-0.5 text-[15px] text-azure hover:underline">
+            <ChevronLeft size={17} className={isRtl ? 'rotate-180' : ''} /> {isRtl ? 'تغيير نوع الحساب' : 'Change account type'}
           </button>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-mist px-3 py-1 text-[13px] font-medium">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-mist px-3 py-1 text-[13px] font-medium text-ink border border-card-border">
             {role === 'planner' ? <Sparkles size={13} /> : <PartyPopper size={13} />}
-            {role === 'planner' ? 'Planner account' : 'Client account'}
+            {role === 'planner' ? (isRtl ? 'حساب منظم فعاليات' : 'Planner account') : (isRtl ? 'حساب عميل' : 'Client account')}
           </span>
-          <h1 className="mt-4 text-[36px] leading-[1.05] font-semibold tracking-[-0.03em]">Create your account</h1>
-          {role === 'planner' && <p className="mt-2 text-[15px] text-graphite">Next you’ll verify your business. It takes about five minutes.</p>}
-          <div className="mt-8 space-y-4">
+          <h2 className="mt-4 text-[32px] font-semibold tracking-tight text-ink">{isRtl ? 'إنشاء حسابك' : 'Create your account'}</h2>
+          <div className="mt-6 space-y-4">
             <div>
-              <label className="label" htmlFor="name">Full name</label>
-              <input id="name" className="field" autoComplete="name" value={f.name} onChange={(e) => set('name', e.target.value)} placeholder="Jordan Avery" />
+              <label className="label">{isRtl ? 'الاسم الكامل' : 'Full name'}</label>
+              <input className="field" value={f.name} onChange={(e) => set('name', e.target.value)} placeholder="Elena Marchetti" />
             </div>
             {role === 'planner' && (
               <div>
-                <label className="label" htmlFor="biz">Business name</label>
-                <input id="biz" className="field" value={f.business} onChange={(e) => set('business', e.target.value)} placeholder="Avery Events Co." />
+                <label className="label">{isRtl ? 'اسم الاستوديو أو النشاط التجاري' : 'Business name'}</label>
+                <input className="field" value={f.business} onChange={(e) => set('business', e.target.value)} placeholder="Marchetti & Co." />
               </div>
             )}
             <div>
-              <label className="label" htmlFor="email">Email</label>
-              <input id="email" type="email" className="field" autoComplete="email" value={f.email} onChange={(e) => { set('email', e.target.value); setError('') }} placeholder="you@example.com" />
+              <label className="label">{isRtl ? 'المدينة والمنطقة' : 'Primary location'}</label>
+              <input className="field" value={f.location} onChange={(e) => set('location', e.target.value)} placeholder="New York, NY" />
             </div>
             <div>
-              <label className="label" htmlFor="pw">Password</label>
-              <input id="pw" type="password" className="field" autoComplete="new-password" value={f.password} onChange={(e) => set('password', e.target.value)} placeholder="At least 8 characters" />
+              <label className="label">{isRtl ? 'البريد الإلكتروني' : 'Email'}</label>
+              <input type="email" className="field" value={f.email} onChange={(e) => set('email', e.target.value)} placeholder="elena@example.com" />
             </div>
             <div>
-              <label className="label" htmlFor="city">City <span className="font-normal text-silver">(optional)</span></label>
-              <input id="city" className="field" value={f.location} onChange={(e) => set('location', e.target.value)} placeholder="San Francisco, CA" />
+              <label className="label">{isRtl ? 'كلمة المرور' : 'Password'}</label>
+              <input type="password" className="field" value={f.password} onChange={(e) => set('password', e.target.value)} placeholder="8+ characters" />
             </div>
-            <label className="flex cursor-pointer items-start gap-3 pt-1 text-[14px] text-graphite">
-              <input type="checkbox" checked={f.agree} onChange={(e) => set('agree', e.target.checked)} className="mt-0.5 h-4 w-4 accent-[#0071e3]" />
-              I agree to the Terms of Service and Privacy Policy.
+            <label className="flex items-start gap-2.5 pt-2 text-[13px] text-graphite cursor-pointer">
+              <input type="checkbox" checked={f.agree} onChange={(e) => set('agree', e.target.checked)} className="mt-0.5" />
+              <span>
+                {isRtl
+                  ? 'أوافق على شروط خدمة إتلامو ومعايير التوثيق وسياسة الخصوصية.'
+                  : 'I agree to the Etlamo Terms of Service, verification guidelines and privacy policy.'}
+              </span>
             </label>
           </div>
-          {error && <p className="mt-4 rounded-xl bg-[#fbeaea] px-4 py-3 text-[14px] text-[#c4271b]">{error}</p>}
-          <Button size="lg" type="submit" className="mt-7 w-full" disabled={!valid}>
-            {role === 'planner' ? 'Continue to verification' : 'Create account'} <ArrowRight size={17} />
+          {error && <p className="mt-4 rounded-xl bg-rose-500/10 border border-rose-500/20 px-4 py-3 text-[14px] text-rose-500">{error}</p>}
+          <Button size="lg" type="submit" className="mt-6 w-full" disabled={!valid}>
+            {role === 'planner' ? (isRtl ? 'إنشاء حساب ومتابعة التوثيق' : 'Continue to verification') : (isRtl ? 'إنشاء الحساب' : 'Create account')}
           </Button>
         </form>
       )}
@@ -140,37 +154,35 @@ export function SignUp({ query }: { query: URLSearchParams }) {
 
 function RoleCard({ selected, onClick, icon, title, body }: { selected: boolean; onClick: () => void; icon: React.ReactNode; title: string; body: string }) {
   return (
-    <button
-      type="button"
+    <div
+      onClick={onClick}
       role="radio"
       aria-checked={selected}
-      onClick={onClick}
       className={cx(
-        'flex w-full cursor-pointer items-start gap-4 rounded-[20px] border p-5 text-left transition duration-200',
-        selected ? 'border-azure bg-azure/[0.04] ring-4 ring-azure/12' : 'border-hairline hover:border-silver',
+        'flex cursor-pointer gap-4 rounded-2xl border p-4 transition-all duration-200',
+        selected ? 'border-azure bg-azure-tint ring-2 ring-azure/20' : 'border-card-border bg-card hover:bg-mist',
       )}
     >
-      <span className={cx('flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl transition', selected ? 'bg-azure text-white' : 'bg-mist text-ink')}>{icon}</span>
-      <span className="flex-1">
-        <span className="block text-[17px] font-semibold">{title}</span>
-        <span className="mt-0.5 block text-[14px] leading-snug text-graphite">{body}</span>
-      </span>
-      <span className={cx('mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition', selected ? 'border-azure bg-azure text-white' : 'border-hairline')}>
-        {selected && <Check size={12} strokeWidth={3} />}
-      </span>
-    </button>
+      <div className={cx('flex h-11 w-11 shrink-0 items-center justify-center rounded-xl', selected ? 'bg-azure text-white' : 'bg-mist text-graphite')}>
+        {icon}
+      </div>
+      <div>
+        <p className="text-[16px] font-semibold text-ink">{title}</p>
+        <p className="mt-0.5 text-[14px] leading-snug text-graphite">{body}</p>
+      </div>
+    </div>
   )
 }
 
 const DEMOS = [
-  { id: 'cl-maya', label: 'Client', note: 'Has requests and planner replies' },
-  { id: 'pl-elena', label: 'Verified planner', note: 'Portfolio and active chats' },
-  { id: 'pl-marcus', label: 'Planner in review', note: 'Verification pending' },
-  { id: 'admin', label: 'Trust team admin', note: 'Approves planners' },
+  { id: 'pl-elena', label: 'Elena Marchetti (Planner)', note: 'Verified luxury wedding planner' },
+  { id: 'cl-maya', label: 'Maya Chen (Client)', note: 'Planning a Napa Valley vineyard wedding' },
+  { id: 'admin', label: 'Trust Team (Admin)', note: 'Reviews planner verification queue' },
 ]
 
 export function SignIn({ query }: { query: URLSearchParams }) {
   const { signIn, signInAs, getUser } = useStore()
+  const { isRtl } = useI18n()
   const next = query.get('next')
   const [email, setEmail] = useState('')
   const [pw, setPw] = useState('')
@@ -180,8 +192,12 @@ export function SignIn({ query }: { query: URLSearchParams }) {
 
   return (
     <AuthFrame image={img('1768777270882-9f74939fee50', 1600)}>
-      <h1 className="text-[40px] leading-[1.05] font-semibold tracking-[-0.03em]">Sign in</h1>
-      <p className="mt-2 text-[17px] text-graphite">Welcome back to Fête.</p>
+      <h1 className="text-[40px] leading-[1.05] font-semibold tracking-[-0.03em] text-ink">
+        {isRtl ? 'تسجيل الدخول' : 'Sign in'}
+      </h1>
+      <p className="mt-2 text-[17px] text-graphite">
+        {isRtl ? 'مرحباً بك مجدداً في إتلامو.' : 'Welcome back to Etlamo.'}
+      </p>
       <form
         className="mt-8 space-y-4"
         onSubmit={(e) => {
@@ -192,27 +208,29 @@ export function SignIn({ query }: { query: URLSearchParams }) {
         }}
       >
         <div>
-          <label className="label" htmlFor="email">Email</label>
+          <label className="label" htmlFor="email">{isRtl ? 'البريد الإلكتروني' : 'Email'}</label>
           <input id="email" type="email" className="field" value={email} onChange={(e) => { setEmail(e.target.value); setError('') }} placeholder="you@example.com" />
         </div>
         <div>
-          <label className="label" htmlFor="pw">Password</label>
+          <label className="label" htmlFor="pw">{isRtl ? 'كلمة المرور' : 'Password'}</label>
           <input id="pw" type="password" className="field" value={pw} onChange={(e) => { setPw(e.target.value); setError('') }} />
         </div>
-        {error && <p className="rounded-xl bg-[#fbeaea] px-4 py-3 text-[14px] text-[#c4271b]">{error}</p>}
+        {error && <p className="rounded-xl bg-rose-500/10 border border-rose-500/20 px-4 py-3 text-[14px] text-rose-500">{error}</p>}
         <Button size="lg" type="submit" className="w-full" disabled={!email || !pw}>
-          Sign in
+          {isRtl ? 'تسجيل الدخول' : 'Sign in'}
         </Button>
       </form>
       <p className="mt-6 text-center text-[14px] text-graphite">
-        New to Fête?{' '}
-        <Link to={`/signup${next ? `?next=${encodeURIComponent(next)}` : ''}`} className="text-link hover:underline">
-          Create an account
+        {isRtl ? 'مستخدم جديد؟' : 'New to Etlamo?'}{' '}
+        <Link to={`/signup${next ? `?next=${encodeURIComponent(next)}` : ''}`} className="text-azure hover:underline font-medium">
+          {isRtl ? 'إنشاء حساب جديد' : 'Create an account'}
         </Link>
       </p>
 
-      <div className="mt-10 rounded-3xl bg-mist p-5">
-        <p className="text-[13px] font-semibold text-graphite">Explore with a demo account</p>
+      <div className="mt-10 rounded-3xl bg-mist p-5 border border-card-border">
+        <p className="text-[13px] font-semibold text-graphite">
+          {isRtl ? 'استكشف بحساب تجريبي فوري' : 'Explore with a demo account'}
+        </p>
         <div className="mt-3 space-y-1">
           {DEMOS.map((d) => {
             const u = getUser(d.id)
@@ -224,16 +242,16 @@ export function SignIn({ query }: { query: URLSearchParams }) {
                   signInAs(u.id)
                   go(u.role)
                 }}
-                className="flex w-full cursor-pointer items-center gap-3 rounded-2xl px-2 py-2 text-left transition hover:bg-white"
+                className="flex w-full cursor-pointer items-center gap-3 rounded-2xl px-2.5 py-2.5 text-left transition hover:bg-card border border-transparent hover:border-card-border"
               >
                 <Avatar user={u} size={34} />
                 <span className="min-w-0 flex-1">
-                  <span className="block text-[14px] font-semibold">
+                  <span className="block text-[14px] font-semibold text-ink">
                     {u.name} <span className="font-normal text-graphite">· {d.label}</span>
                   </span>
                   <span className="block text-[12px] text-graphite">{d.note}</span>
                 </span>
-                <ArrowRight size={15} className="text-silver" />
+                <ArrowRight size={15} className={`text-silver ${isRtl ? 'rotate-180' : ''}`} />
               </button>
             )
           })}
