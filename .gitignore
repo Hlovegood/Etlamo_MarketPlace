@@ -19,3 +19,13 @@ logs/
 # beside it.
 /.plugins/
 /.opencode-skills/
+
+# Figma Make archive artifacts
+make_repos/
+make_repos.json
+ai_chat.json
+canvas.fig
+meta.json
+thumbnail.png
+images/
+
