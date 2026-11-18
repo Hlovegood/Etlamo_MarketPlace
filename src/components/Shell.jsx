@@ -21,18 +21,26 @@ import { cx } from '../lib/format'
 import { Avatar, Button, Container, Verified } from './ui'
 import { ThemeToggle } from './ThemeToggle'
 import { LangToggle } from './LangToggle'
+import GlassNavbar from './GlassNavbar'
 
 export function Logo({ light }) {
   return (
     <Link
       to="/"
       className={cx(
-        'flex items-center gap-2.5 text-[21px] font-semibold tracking-tight transition active:scale-[0.98]',
+        'group flex items-center gap-2.5 text-[21px] font-semibold tracking-tight transition active:scale-[0.98]',
         light ? 'text-white' : 'text-ink',
       )}
     >
       <span className="relative flex h-7 w-8 items-center justify-center shrink-0">
-        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden className="shrink-0">
+        <span
+          className="absolute -inset-1 rounded-full opacity-0 blur-[3px] group-hover:opacity-60 transition-opacity duration-500 animate-spin"
+          style={{
+            background: 'linear-gradient(135deg, rgba(2,132,199,0.7), rgba(245,158,11,0.6))',
+            animationDuration: '14s',
+          }}
+        />
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden className="relative z-10 shrink-0">
           <circle
             cx="10"
             cy="14"
@@ -52,222 +60,10 @@ export function Logo({ light }) {
   )
 }
 
+export { GlassNavbar }
+
 export function Nav({ path }) {
-  const { me, signOut, unreadCount } = useStore()
-  const { t, isRtl } = useI18n()
-  const [menu, setMenu] = useState(false)
-  const [mobile, setMobile] = useState(false)
-  const ref = useRef(null)
-
-  useEffect(() => {
-    setMenu(false)
-    setMobile(false)
-  }, [path])
-
-  useEffect(() => {
-    const onDown = (e) => ref.current && !ref.current.contains(e.target) && setMenu(false)
-    document.addEventListener('mousedown', onDown)
-    return () => document.removeEventListener('mousedown', onDown)
-  }, [])
-
-  const links = [
-    { to: '/explore', label: t('nav_explore', 'Explore') },
-    { to: '/planners', label: t('nav_planners', 'Planners') },
-    { to: '/requests', label: t('nav_requests', 'Requests') },
-  ]
-
-  return (
-    <header className="sticky top-0 z-40 border-b border-card-border bg-surface/85 backdrop-blur-2xl backdrop-saturate-180 transition-colors">
-      <Container className="flex h-16 items-center justify-between gap-4">
-        <div className="flex items-center gap-7">
-          <Logo />
-          <nav className="hidden items-center gap-1 md:flex">
-            {links.map((l) => {
-              const active =
-                path.startsWith(l.to) ||
-                (l.to === '/explore' && path.startsWith('/project')) ||
-                (l.to === '/planners' && path.startsWith('/planner/')) ||
-                (l.to === '/requests' && path.startsWith('/request/'))
-              return (
-                <Link
-                  key={l.to}
-                  to={l.to}
-                  className={cx(
-                    'rounded-full px-3.5 py-1.5 text-[14px] transition-all duration-150',
-                    active
-                      ? 'bg-mist font-semibold text-ink shadow-subtle'
-                      : 'text-graphite hover:text-ink hover:bg-mist/50',
-                  )}
-                >
-                  {l.label}
-                </Link>
-              )
-            })}
-          </nav>
-        </div>
-
-        <div className="flex items-center gap-2">
-          {/* Theme & Language Toggles */}
-          <div className="flex items-center gap-1.5">
-            <LangToggle />
-            <ThemeToggle />
-          </div>
-
-          <div className="h-5 w-px bg-hairline mx-1 hidden sm:block" />
-
-          {me ? (
-            <>
-              {me.role === 'client' && (
-                <Button size="sm" className="hidden sm:inline-flex" onClick={() => navigate('/requests/new')}>
-                  <Plus size={14} /> {t('nav_post_request', 'Post request')}
-                </Button>
-              )}
-              {me.role === 'planner' && (
-                <Button size="sm" className="hidden sm:inline-flex" onClick={() => navigate('/portfolio/new')}>
-                  <Plus size={14} /> {t('nav_add_project', 'Add project')}
-                </Button>
-              )}
-              {me.role === 'admin' && (
-                <Button size="sm" variant="secondary" className="hidden sm:inline-flex" onClick={() => navigate('/admin')}>
-                  <ShieldCheck size={14} className="text-azure" /> {t('nav_review_queue', 'Review queue')}
-                </Button>
-              )}
-              {me.role !== 'admin' && (
-                <Link
-                  to="/messages"
-                  aria-label={t('nav_messages', 'Messages')}
-                  className="relative flex h-9 w-9 items-center justify-center rounded-full text-ink transition hover:bg-mist active:scale-95"
-                >
-                  <MessageCircle size={19} />
-                  {unreadCount > 0 && (
-                    <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#ff3b30] px-1 text-[10px] font-semibold text-white ring-2 ring-surface">
-                      {unreadCount}
-                    </span>
-                  )}
-                </Link>
-              )}
-              <div className="relative" ref={ref}>
-                <button
-                  onClick={() => setMenu((m) => !m)}
-                  className="flex cursor-pointer items-center gap-1.5 rounded-full p-1 pr-2 transition hover:bg-mist active:scale-98"
-                >
-                  <Avatar user={me} size={32} />
-                  <ChevronDown
-                    size={14}
-                    className="text-graphite transition duration-200"
-                    style={{ transform: menu ? 'rotate(180deg)' : 'none' }}
-                  />
-                </button>
-                {menu && (
-                  <div
-                    className={cx(
-                      'absolute top-12 w-64 animate-pop overflow-hidden rounded-2xl border border-card-border bg-card/95 p-1.5 shadow-lift backdrop-blur-2xl z-50',
-                      isRtl ? 'left-0' : 'right-0',
-                    )}
-                  >
-                    <div className="px-3 py-2.5">
-                      <div className="flex items-center gap-1.5">
-                        <p className="truncate text-[14px] font-semibold text-ink">{me.name}</p>
-                        {me.verification === 'verified' && <Verified size={14} />}
-                      </div>
-                      <p className="text-[12px] text-graphite capitalize">
-                        {me.role === 'planner'
-                          ? `Planner · ${me.verification === 'verified' ? 'Verified' : me.verification === 'pending' ? 'In review' : 'Not verified'}`
-                          : me.role}
-                      </p>
-                    </div>
-                    <div className="my-1 h-px bg-card-border" />
-                    {me.role !== 'admin' && (
-                      <MenuItem to="/dashboard" icon={<LayoutGrid size={15} />} label={t('nav_dashboard', 'Dashboard')} />
-                    )}
-                    {me.role === 'planner' && (
-                      <MenuItem
-                        to={`/planner/${me.id}`}
-                        icon={<Avatar user={me} size={15} />}
-                        label={t('nav_my_profile', 'My public profile')}
-                      />
-                    )}
-                    {me.role === 'planner' && (
-                      <MenuItem to="/verify" icon={<ShieldCheck size={15} />} label={t('nav_verification', 'Verification')} />
-                    )}
-                    {me.role !== 'admin' && (
-                      <MenuItem to="/messages" icon={<MessageCircle size={15} />} label={t('nav_messages', 'Messages')} />
-                    )}
-                    {me.role === 'admin' && (
-                      <MenuItem to="/admin" icon={<ShieldCheck size={15} />} label={t('nav_review_queue', 'Review queue')} />
-                    )}
-                    <div className="my-1 h-px bg-card-border" />
-                    <button
-                      onClick={() => {
-                        signOut()
-                        navigate('/')
-                      }}
-                      className="flex w-full cursor-pointer items-center gap-2.5 rounded-xl px-3 py-2 text-left text-[14px] text-rose-500 transition hover:bg-rose-500/10"
-                    >
-                      <LogOut size={15} /> {t('nav_signout', 'Sign out')}
-                    </button>
-                  </div>
-                )}
-              </div>
-            </>
-          ) : (
-            <>
-              <Link
-                to="/signin"
-                className="hidden rounded-full px-3.5 py-1.5 text-[14px] font-medium text-ink hover:bg-mist sm:block transition"
-              >
-                {t('nav_signin', 'Sign in')}
-              </Link>
-              <Button size="sm" onClick={() => navigate('/signup')}>
-                {t('nav_join', 'Join Etlamo')}
-              </Button>
-            </>
-          )}
-
-          <button
-            onClick={() => setMobile((m) => !m)}
-            className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full hover:bg-mist md:hidden text-ink"
-            aria-label="Menu"
-          >
-            {mobile ? <X size={19} /> : <Menu size={19} />}
-          </button>
-        </div>
-      </Container>
-
-      {mobile && (
-        <div className="animate-fade border-t border-card-border bg-card/98 px-5 py-4 backdrop-blur-xl md:hidden">
-          <nav className="flex flex-col space-y-1">
-            {links.map((l) => (
-              <Link key={l.to} to={l.to} className="rounded-xl px-3 py-2.5 text-[16px] font-medium text-ink hover:bg-mist">
-                {l.label}
-              </Link>
-            ))}
-            {me?.role === 'client' && (
-              <Link
-                to="/requests/new"
-                className="rounded-xl px-3 py-2.5 text-[16px] font-semibold text-azure hover:bg-azure/5"
-              >
-                {t('nav_post_request', 'Post request')}
-              </Link>
-            )}
-            {me?.role === 'planner' && (
-              <Link
-                to="/portfolio/new"
-                className="rounded-xl px-3 py-2.5 text-[16px] font-semibold text-azure hover:bg-azure/5"
-              >
-                {t('nav_add_project', 'Add project')}
-              </Link>
-            )}
-            {!me && (
-              <Link to="/signin" className="rounded-xl px-3 py-2.5 text-[16px] font-medium text-ink hover:bg-mist">
-                {t('nav_signin', 'Sign in')}
-              </Link>
-            )}
-          </nav>
-        </div>
-      )}
-    </header>
-  )
+  return <GlassNavbar path={path} />
 }
 
 function MenuItem({ to, icon, label }) {
