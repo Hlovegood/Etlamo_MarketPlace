@@ -84,7 +84,7 @@ export function Explore() {
       <div className="sticky top-16 z-30 -mx-5 mb-8 flex flex-col gap-3.5 border-b border-card-border bg-surface/85 px-5 py-3.5 backdrop-blur-2xl backdrop-saturate-180 md:-mx-8 md:flex-row md:items-center md:justify-between md:px-8 transition-colors">
         <div className="-mx-1 flex items-center gap-2 overflow-x-auto px-1 pb-0.5 scrollbar-none">
           {['All', ...CATEGORIES].map((c) => (
-            <Chip key={c} active={cat === c} onClick={() => setCat(c)}>
+            <Chip key={c} active={cat === c} onClick={() => setCat(c)} layoutId="explore-category-pill">
               {categoryNames[c] ?? c}
             </Chip>
           ))}

@@ -203,7 +203,7 @@ export default function Home() {
           <FadeReveal>
             <div className="mb-10 flex items-end justify-between gap-4">
               <div>
-                <p className="text-[14px] font-semibold text-amber uppercase tracking-wider">
+                <p className="text-[13px] font-semibold text-amber">
                   {t('curated_kicker', 'Curated Collections')}
                 </p>
                 <h2 className="mt-1 text-[32px] font-semibold tracking-[-0.03em] md:text-[44px] text-ink">
@@ -306,7 +306,7 @@ export default function Home() {
           <FadeReveal>
             <div className="mb-10 flex items-end justify-between gap-4">
               <div>
-                <p className="text-[14px] font-semibold text-amber uppercase tracking-wider">
+                <p className="text-[13px] font-semibold text-amber">
                   {t('active_board_kicker', 'Active Board')}
                 </p>
                 <h2 className="mt-1 text-[32px] font-semibold tracking-[-0.03em] md:text-[44px] text-ink">
@@ -414,7 +414,7 @@ function FlowCard({
         dark ? 'bg-stone-900 text-white border-white/10' : 'bg-card text-ink border-card-border'
       }`}
     >
-      <p className={`text-[14px] font-semibold uppercase tracking-wider ${dark ? 'text-[#2997ff]' : 'text-amber'}`}>
+      <p className={`text-[13px] font-semibold ${dark ? 'text-[#2997ff]' : 'text-amber'}`}>
         {kicker}
       </p>
       <h3 className="mt-3 max-w-sm text-[28px] leading-tight font-semibold tracking-[-0.02em]">{title}</h3>

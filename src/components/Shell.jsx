@@ -109,7 +109,7 @@ export function PersonaSwitcher() {
       {open && (
         <div className="mb-3 w-80 animate-pop overflow-hidden rounded-3xl border border-card-border bg-card/95 p-3 shadow-lift backdrop-blur-2xl">
           <div className="px-3 pt-2 pb-2">
-            <p className="text-[11px] font-semibold tracking-wider text-graphite uppercase">
+            <p className="text-[12px] font-semibold text-graphite">
               {t('quick_persona', 'Quick Demo Persona')}
             </p>
             <p className="text-[13px] text-graphite">

@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { AnimatePresence } from 'framer-motion'
 import { match, useRoute } from './lib/router'
 import { StoreProvider } from './lib/store'
 import { ThemeProvider } from './lib/theme'
@@ -7,6 +8,7 @@ import { Footer, Nav, PersonaSwitcher } from './components/Shell'
 import { ToastProvider } from './components/ui'
 import { Preloader } from './components/Preloader'
 import { ErrorBoundary } from './components/ErrorBoundary'
+import PageTransition from './components/podie/PageTransition'
 import Home from './pages/Home'
 import { Explore, ProjectDetail } from './pages/Explore'
 import { PlannerProfile, Planners } from './pages/Planners'
@@ -62,9 +64,13 @@ function AppContent() {
     const t = TITLES.find(([k]) => path.startsWith(k))
     const titleText = t ? (isRtl ? t[2] : t[1]) : (isRtl ? 'نخبة مخططي الحفلات والأعراس المعتمدين' : 'Verified Luxury Wedding & Event Planners')
     document.title = `${titleText} · ${isRtl ? 'إتلامو' : 'Etlamo'}`
+    window.scrollTo({ top: 0, behavior: 'instant' })
   }, [path, isRtl])
 
   const bare = path.startsWith('/messages') || path === '/signup' || path === '/signin'
+
+  // Primary route key for transitions (e.g. 'home', 'explore', 'planners', etc.)
+  const routeSegment = path === '/' ? 'home' : path.split('/')[1] || 'root'
 
   return (
     <div className="flex min-h-screen flex-col bg-surface text-ink transition-colors duration-200">
@@ -72,9 +78,13 @@ function AppContent() {
         <Preloader />
       </ErrorBoundary>
       <Nav path={path} />
-      <main className="flex-1">
+      <main className="flex-1 overflow-x-clip">
         <ErrorBoundary>
-          <Routes path={path} query={query} />
+          <AnimatePresence mode="wait" initial={false}>
+            <PageTransition key={routeSegment} routeKey={routeSegment}>
+              <Routes path={path} query={query} />
+            </PageTransition>
+          </AnimatePresence>
         </ErrorBoundary>
       </main>
       {!bare && <Footer />}

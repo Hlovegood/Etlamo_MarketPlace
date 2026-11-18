@@ -130,7 +130,7 @@ export default function Messages({ threadId }) {
                       </span>
                     )}
                     <div className="min-w-0">
-                      <p className="text-[11px] font-medium text-graphite uppercase">{req ? t('about_request', 'About request') : t('about_project', 'About project')}</p>
+                      <p className="text-[12px] font-medium text-graphite">{req ? t('about_request', 'About request') : t('about_project', 'About project')}</p>
                       <p className="truncate text-[14px] font-semibold text-ink">{req?.title ?? proj?.title}</p>
                     </div>
                   </Link>

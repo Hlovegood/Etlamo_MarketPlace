@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
 import { BadgeCheck, CheckCircle2, ChevronLeft, ChevronRight, Star, X } from 'lucide-react'
 import { cx } from '../lib/format'
 
@@ -94,6 +95,7 @@ export function Chip({
   active,
   onClick,
   className,
+  layoutId,
 }) {
   const Tag = onClick ? 'button' : 'span'
   return (
@@ -101,15 +103,22 @@ export function Chip({
       type={onClick ? 'button' : undefined}
       onClick={onClick}
       className={cx(
-        'inline-flex items-center gap-1 rounded-full px-3.5 py-1.5 text-[13px] font-medium whitespace-nowrap transition-all duration-150',
-        onClick && 'cursor-pointer active:scale-[0.96]',
+        'relative inline-flex items-center gap-1 rounded-full px-4 py-1.5 text-[13px] font-medium whitespace-nowrap transition-colors duration-150',
+        onClick && 'cursor-pointer active:scale-[0.97]',
         active
-          ? 'bg-ink text-white dark:bg-azure dark:text-white shadow-subtle'
+          ? 'text-white font-semibold'
           : 'bg-mist text-ink hover:bg-[#e8e8ed] dark:bg-card-border/60 dark:text-ink dark:hover:bg-card-border/90',
         className,
       )}
     >
-      {children}
+      {active && (
+        <motion.div
+          layoutId={layoutId || 'chip-active-indicator'}
+          className="absolute inset-0 rounded-full bg-ink dark:bg-azure shadow-subtle -z-10"
+          transition={{ type: 'spring', stiffness: 420, damping: 30 }}
+        />
+      )}
+      <span className="relative z-10">{children}</span>
     </Tag>
   )
 }
@@ -120,22 +129,32 @@ export function Segmented({
   onChange,
 }) {
   return (
-    <div className="inline-flex rounded-xl bg-[#e8e8ed]/70 p-0.5 dark:bg-card-border/60">
-      {options.map((o) => (
-        <button
-          key={o.value}
-          type="button"
-          onClick={() => onChange(o.value)}
-          className={cx(
-            'cursor-pointer rounded-[9px] px-3.5 py-1.5 text-[13px] font-medium transition-all duration-150',
-            value === o.value
-              ? 'bg-white text-ink shadow-[0_1px_3px_rgb(0_0_0/0.12)] dark:bg-card dark:text-ink dark:shadow-[0_1px_3px_rgb(0_0_0/0.4)]'
-              : 'text-graphite hover:text-ink',
-          )}
-        >
-          {o.label}
-        </button>
-      ))}
+    <div className="relative inline-flex rounded-xl bg-mist/90 p-1 dark:bg-card-border/60 border border-card-border/60">
+      {options.map((o) => {
+        const isActive = value === o.value
+        return (
+          <button
+            key={o.value}
+            type="button"
+            onClick={() => onChange(o.value)}
+            className={cx(
+              'relative z-10 cursor-pointer rounded-[9px] px-3.5 py-1.5 text-[13px] font-medium transition-colors duration-150 active:scale-[0.98]',
+              isActive
+                ? 'font-semibold text-ink dark:text-white'
+                : 'text-graphite hover:text-ink dark:text-white/70 dark:hover:text-white',
+            )}
+          >
+            {isActive && (
+              <motion.div
+                layoutId="segmented-pill-indicator"
+                className="absolute inset-0 -z-10 rounded-[9px] bg-card shadow-subtle dark:bg-card dark:shadow-[0_2px_8px_rgba(0,0,0,0.5)] border border-black/5 dark:border-white/10"
+                transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+              />
+            )}
+            <span className="relative z-10">{o.label}</span>
+          </button>
+        )
+      })}
     </div>
   )
 }

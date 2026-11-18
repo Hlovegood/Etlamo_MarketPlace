@@ -308,7 +308,7 @@ export function PlannerProfile({ id }) {
 
             {planner.bio && (
               <div className="rounded-3xl border border-card-border bg-card p-6 shadow-subtle">
-                <h3 className="text-[14px] font-semibold tracking-wider text-graphite uppercase mb-3">
+                <h3 className="text-[13px] font-semibold text-graphite mb-3">
                   {isRtl ? 'عن الاستوديو' : 'About the Studio'}
                 </h3>
                 <p className="text-[16px] leading-relaxed text-graphite font-normal">{planner.bio}</p>
@@ -593,7 +593,7 @@ function PackageCard({
         </div>
       </div>
       <div className="mt-6 pt-5 border-t border-card-border">
-        <p className="text-[12px] font-semibold text-graphite uppercase tracking-wider mb-3">
+        <p className="text-[12px] font-semibold text-graphite mb-3">
           {isRtl ? 'المزايا المشمولة' : 'Service Inclusions'}
         </p>
         <ul className="grid sm:grid-cols-2 gap-2.5 text-[13px] text-graphite">
