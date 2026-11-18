@@ -60,14 +60,18 @@ export default function GlassNavbar({ path = '/' }) {
     return () => mql.removeEventListener('change', handler)
   }, [])
 
-  // Scroll listener for full-width -> pill shape morph
+  // Scroll listener for full-width -> pill shape morph with hysteresis
   useEffect(() => {
     let ticking = false
     const handleScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
-          const scrolled = window.scrollY > 20
-          setIsScrolled(scrolled)
+          const y = window.scrollY
+          setIsScrolled((prev) => {
+            if (!prev && y > 35) return true
+            if (prev && y < 14) return false
+            return prev
+          })
           ticking = false
         })
         ticking = true
@@ -114,26 +118,30 @@ export default function GlassNavbar({ path = '/' }) {
   const glassStyle = {
     background: isDark
       ? isScrolled
-        ? 'rgba(20, 21, 24, 0.78)'
-        : 'rgba(16, 17, 20, 0.85)'
+        ? 'rgba(18, 20, 26, 0.82)'
+        : 'rgba(9, 10, 13, 0.88)'
       : isScrolled
-        ? 'rgba(255, 255, 255, 0.82)'
-        : 'rgba(255, 255, 255, 0.90)',
+        ? 'rgba(255, 255, 255, 0.84)'
+        : 'rgba(255, 255, 255, 0.92)',
     border: isScrolled
       ? isDark
-        ? '1px solid rgba(255, 255, 255, 0.12)'
-        : '1px solid rgba(0, 0, 0, 0.08)'
-      : 'none',
-    borderBottom: !isScrolled
+        ? '1px solid rgba(255, 255, 255, 0.14)'
+        : '1px solid rgba(15, 23, 42, 0.10)'
+      : '1px solid transparent',
+    borderBottom: isScrolled
       ? isDark
-        ? '1px solid rgba(255, 255, 255, 0.10)'
-        : '1px solid rgba(0, 0, 0, 0.08)'
-      : undefined,
+        ? '1px solid rgba(255, 255, 255, 0.14)'
+        : '1px solid rgba(15, 23, 42, 0.10)'
+      : isDark
+        ? '1px solid rgba(255, 255, 255, 0.12)'
+        : '1px solid rgba(15, 23, 42, 0.08)',
     boxShadow: isScrolled
       ? isDark
-        ? '0 16px 40px -8px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.12)'
-        : '0 16px 36px -8px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.9)'
+        ? '0 18px 45px -10px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.14)'
+        : '0 16px 36px -8px rgba(15, 23, 42, 0.10), 0 2px 6px rgba(15, 23, 42, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.9)'
       : 'none',
+    backdropFilter: 'blur(24px) saturate(1.8)',
+    WebkitBackdropFilter: 'blur(24px) saturate(1.8)',
   }
 
   const glassBlur = {
@@ -155,48 +163,27 @@ export default function GlassNavbar({ path = '/' }) {
 
   const springTransition = reducedMotion
     ? { duration: 0 }
-    : { type: 'spring', stiffness: 240, damping: 26, mass: 0.8 }
+    : { type: 'spring', stiffness: 280, damping: 28, mass: 0.8 }
 
   return (
-    <header
-      className={cx(
-        'sticky top-0 z-40 w-full flex justify-center pointer-events-none transition-[padding] duration-300 ease-out',
-        isScrolled ? 'pt-2 md:pt-3 px-3 sm:px-6' : 'p-0',
-      )}
-    >
+    <header className="sticky top-0 z-40 w-full pointer-events-none flex justify-center relative">
       <motion.nav
-        layout
         initial={false}
         animate={{
-          width: isScrolled ? 'calc(100% - 1.5rem)' : '100%',
-          maxWidth: isScrolled ? '1180px' : '100%',
+          width: isScrolled ? 'min(1140px, calc(100% - 1.5rem))' : '100%',
+          marginTop: isScrolled ? 10 : 0,
           borderRadius: isScrolled ? 9999 : 0,
+          paddingTop: isScrolled ? 8 : 14,
+          paddingBottom: isScrolled ? 8 : 14,
+          paddingLeft: isScrolled ? 18 : 28,
+          paddingRight: isScrolled ? 18 : 28,
         }}
         transition={springTransition}
-        className={cx(
-          'pointer-events-auto relative isolate flex w-full items-center justify-between transition-colors duration-200',
-          isScrolled
-            ? 'px-3 py-1.5 sm:px-4 md:px-5'
-            : 'px-4 sm:px-8 lg:px-12 py-3',
-        )}
+        className="pointer-events-auto relative isolate flex w-full items-center justify-between transition-colors duration-200"
         style={glassStyle}
       >
-        {/* Layered Glass Blur Background */}
-        <div
-          className={cx(
-            'pointer-events-none absolute inset-0 z-[-1] transition-all duration-300',
-            isScrolled ? 'rounded-full' : 'rounded-none',
-          )}
-          style={glassBlur}
-        />
-
-        {/* Inner container to keep full-width content gracefully aligned with max-w-7xl at top */}
-        <div
-          className={cx(
-            'flex w-full items-center justify-between gap-3 transition-all duration-300',
-            !isScrolled && 'max-w-7xl mx-auto',
-          )}
-        >
+        {/* Inner container to keep full-width content gracefully aligned with max-w-7xl */}
+        <div className="flex w-full max-w-7xl mx-auto items-center justify-between gap-3">
           {/* Brand Logo with PODIE ambient rotation accent */}
           <div className="flex items-center gap-7">
             <div className="flex items-center gap-2">
@@ -470,7 +457,7 @@ export default function GlassNavbar({ path = '/' }) {
             exit={{ opacity: 0, y: -8, scale: 0.98 }}
             transition={{ duration: 0.22, ease: [0.25, 0.1, 0.25, 1] }}
             className={cx(
-              'pointer-events-auto absolute top-full left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-lg mt-2 flex flex-col gap-1 rounded-2xl p-3 shadow-lift z-50 md:hidden',
+              'pointer-events-auto absolute top-[calc(100%+8px)] left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-lg flex flex-col gap-1 rounded-2xl p-3 shadow-lift z-50 md:hidden',
               isDark ? 'bg-card/95 border-white/12' : 'bg-card/98 border-card-border',
             )}
             style={{

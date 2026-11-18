@@ -18,7 +18,7 @@ import { useI18n } from '../lib/i18n'
 import { img } from '../lib/seed'
 import { ProjectCard, RequestCard } from '../components/cards'
 import { Avatar, Button, Container, RatingStars, Verified } from '../components/ui'
-import { SplitText, Magnet, ShinyText, FadeReveal } from '../components/animations'
+import { SplitText, Magnet, ShinyText, FadeReveal, CountUp } from '../components/animations'
 
 export default function Home() {
   const { db, me, isPlannerVisible } = useStore()
@@ -109,10 +109,27 @@ export default function Home() {
         <Container>
           <FadeReveal>
             <div className="grid grid-cols-2 gap-y-10 border-y border-card-border py-12 text-center md:grid-cols-4">
-              <Stat n={t('stat_planners_num', `${verifiedPlanners.length * 210}+`)} label={t('stat_planners_label', 'Verified luxury planners')} />
-              <Stat n={t('stat_events_num', '14,200+')} label={t('stat_events_label', 'Celebrations showcased')} />
-              <Stat n={t('stat_reply_num', '< 4 hours')} label={t('stat_reply_label', 'Median initial reply')} />
-              <Stat n={t('stat_verified_num', '100%')} label={t('stat_verified_label', 'Vetted & insured profiles')} />
+              <Stat
+                value={verifiedPlanners.length * 210}
+                suffix="+"
+                label={t('stat_planners_label', 'Verified luxury planners')}
+              />
+              <Stat
+                value={14200}
+                suffix="+"
+                label={t('stat_events_label', 'Celebrations showcased')}
+              />
+              <Stat
+                value={4}
+                prefix={isRtl ? 'أقل من ' : '< '}
+                suffix={isRtl ? ' ساعات' : ' hours'}
+                label={t('stat_reply_label', 'Median initial reply')}
+              />
+              <Stat
+                value={100}
+                suffix={isRtl ? '٪' : '%'}
+                label={t('stat_verified_label', 'Vetted & insured profiles')}
+              />
             </div>
           </FadeReveal>
         </Container>
@@ -391,10 +408,16 @@ function HeroTile({ src, className, label, by }) {
   )
 }
 
-function Stat({ n, label }) {
+function Stat({ value, prefix = '', suffix = '', n, label }) {
   return (
     <div>
-      <p className="text-[34px] font-semibold tracking-[-0.03em] md:text-[42px] text-ink">{n}</p>
+      <p className="text-[34px] font-semibold tracking-[-0.03em] md:text-[42px] text-ink">
+        {value !== undefined ? (
+          <CountUp to={value} prefix={prefix} suffix={suffix} />
+        ) : (
+          n
+        )}
+      </p>
       <p className="text-[14px] text-graphite mt-1">{label}</p>
     </div>
   )
