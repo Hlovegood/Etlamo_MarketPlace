@@ -26,27 +26,23 @@ function MorphingInfinity(props: React.ComponentProps<"svg">) {
       aria-label="Loading"
       {...props}
     >
-      <motion.path
-        animate={{
-          d: shouldReduceMotion
-            ? infinity
-            : [circleA, infinity, circleB, infinity, circleA],
-          opacity: shouldReduceMotion ? [0.6, 1, 0.6] : 1,
-        }}
-        transition={{
-          d: {
-            duration: 5,
-            ease: "easeInOut",
-            repeat: Infinity,
-            times: [0, 0.25, 0.5, 0.75, 1.0],
-          },
-          opacity: {
-            duration: 2.5,
-            repeat: Infinity,
-            ease: "easeInOut",
-          },
-        }}
-      />
+      {shouldReduceMotion ? (
+        <path d={infinity} />
+      ) : (
+        <motion.path
+          animate={{
+            d: [circleA, infinity, circleB, infinity, circleA],
+          }}
+          transition={{
+            d: {
+              duration: 5,
+              ease: "easeInOut",
+              repeat: Infinity,
+              times: [0, 0.25, 0.5, 0.75, 1.0],
+            },
+          }}
+        />
+      )}
     </svg>
   );
 }

@@ -6,6 +6,7 @@ import { I18nProvider, useI18n } from './lib/i18n'
 import { Footer, Nav, PersonaSwitcher } from './components/Shell'
 import { ToastProvider } from './components/ui'
 import { Preloader } from './components/Preloader'
+import { ErrorBoundary } from './components/ErrorBoundary'
 import Home from './pages/Home'
 import { Explore, ProjectDetail } from './pages/Explore'
 import { PlannerProfile, Planners } from './pages/Planners'
@@ -67,10 +68,14 @@ function AppContent() {
 
   return (
     <div className="flex min-h-screen flex-col bg-surface text-ink transition-colors duration-200">
-      <Preloader />
+      <ErrorBoundary fallback={null}>
+        <Preloader />
+      </ErrorBoundary>
       <Nav path={path} />
       <main className="flex-1">
-        <Routes path={path} query={query} />
+        <ErrorBoundary>
+          <Routes path={path} query={query} />
+        </ErrorBoundary>
       </main>
       {!bare && <Footer />}
       <PersonaSwitcher />

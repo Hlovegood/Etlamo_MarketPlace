@@ -1,5 +1,10 @@
 {
-  "description": "Discover verified wedding and event planners, browse portfolios, post event requests, and message planners to bring your vision to life.",
+  "title": "Etlamo · Verified Wedding & Event Planners Marketplace",
+  "description": "Etlamo · The premier marketplace connecting discerning clients with verified luxury wedding and celebration planners. إتلامو - منصة نخبة مخططي الحفلات والأعراس المعتمدين.",
+  "language": "en",
+  "icons": {
+    "icon": "/favicon.png"
+  },
   "robots": {
     "index": false
   },

@@ -10,7 +10,7 @@ import { cx } from '../lib/format'
  * Adapter & Experience Design: Etlamo Planners Marketplace
  */
 export function Preloader({
-  minDisplayTime = 1600,
+  minDisplayTime = 1200,
   autoDismiss = true,
 }: {
   minDisplayTime?: number
@@ -32,6 +32,14 @@ export function Preloader({
   }, [])
 
   useEffect(() => {
+    // Absolute failsafe maximum: dismiss after 2000ms under any scenario
+    const safetyTimer = setTimeout(() => {
+      setVisible(false)
+    }, 2000)
+    return () => clearTimeout(safetyTimer)
+  }, [])
+
+  useEffect(() => {
     if (!visible) return
 
     // Progress tick
@@ -43,9 +51,9 @@ export function Preloader({
 
       if (elapsed >= minDisplayTime && autoDismiss) {
         clearInterval(timer)
-        setTimeout(() => setVisible(false), 250)
+        setTimeout(() => setVisible(false), 200)
       }
-    }, 30)
+    }, 25)
 
     return () => clearInterval(timer)
   }, [visible, minDisplayTime, autoDismiss])
@@ -55,7 +63,7 @@ export function Preloader({
     setVisible(false)
   }
 
-  // Escape key dismisses instantly
+  // Escape, Enter or Space keys dismiss instantly
   useEffect(() => {
     if (!visible) return
     const onKey = (e: KeyboardEvent) => {
@@ -67,7 +75,7 @@ export function Preloader({
     return () => window.removeEventListener('keydown', onKey)
   }, [visible])
 
-  // Prevent background scroll while preloader is active
+  // Manage body scroll while preloader is active, release immediately when dismissed
   useEffect(() => {
     if (visible) {
       document.body.style.overflow = 'hidden'
@@ -98,12 +106,12 @@ export function Preloader({
           animate={{ opacity: 1 }}
           exit={
             shouldReduceMotion
-              ? { opacity: 0, transition: { duration: 0.3 } }
+              ? { opacity: 0, transition: { duration: 0.25 } }
               : {
                   opacity: 0,
                   scale: 1.02,
-                  filter: 'blur(10px)',
-                  transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
+                  filter: 'blur(8px)',
+                  transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] },
                 }
           }
           onClick={handleDismiss}
@@ -113,6 +121,7 @@ export function Preloader({
           className={cx(
             'fixed inset-0 z-[120] flex cursor-pointer flex-col items-center justify-center select-none',
             'bg-surface/96 dark:bg-[#0c0d0f]/98 backdrop-blur-2xl transition-colors duration-300',
+            !visible && 'pointer-events-none',
           )}
         >
           {/* Ambient background glow */}
