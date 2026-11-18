@@ -39,7 +39,17 @@ const AVATAR_TONES = [
   'bg-[#4a3b32] text-[#f7ede2]',
 ]
 
-export function Avatar({ user, size = 36, className }: { user?: Pick<User, 'name' | 'avatar' | 'id'>; size?: number; className?: string }) {
+export function Avatar({
+  user,
+  size = 36,
+  className,
+  style,
+}: {
+  user?: Pick<User, 'name' | 'avatar' | 'id'>
+  size?: number
+  className?: string
+  style?: React.CSSProperties
+}) {
   const name = user?.name ?? '?'
   const initials = name
     .split(' ')
@@ -51,12 +61,12 @@ export function Avatar({ user, size = 36, className }: { user?: Pick<User, 'name
     <img
       src={user.avatar}
       alt={name}
-      style={{ width: size, height: size }}
+      style={{ width: size, height: size, ...style }}
       className={cx('shrink-0 rounded-full object-cover', className)}
     />
   ) : (
     <span
-      style={{ width: size, height: size, fontSize: size * 0.38 }}
+      style={{ width: size, height: size, fontSize: size * 0.38, ...style }}
       className={cx('inline-flex shrink-0 items-center justify-center rounded-full font-semibold', tone, className)}
     >
       {initials}

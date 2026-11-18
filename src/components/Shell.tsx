@@ -442,15 +442,24 @@ export function Footer() {
         </div>
         <div className="flex flex-col items-center justify-between gap-4 pt-8 text-[12px] sm:flex-row">
           <p>{t('copyright', `© ${new Date().getFullYear()} Etlamo Inc. All portfolios, requests and reviews verified.`)}</p>
-          <button
-            onClick={() => {
-              resetDemo()
-              navigate('/')
-            }}
-            className="flex cursor-pointer items-center gap-1.5 text-azure hover:underline transition"
-          >
-            <RotateCcw size={12} /> {t('reset_demo', 'Reset interactive demo state')}
-          </button>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent('etlamo:replay-preloader'))}
+              className="flex cursor-pointer items-center gap-1.5 text-graphite hover:text-ink transition"
+            >
+              <Sparkles size={12} className="text-amber" /> {t('replay_preloader', 'Preview preloader')}
+            </button>
+            <span className="text-card-border">·</span>
+            <button
+              onClick={() => {
+                resetDemo()
+                navigate('/')
+              }}
+              className="flex cursor-pointer items-center gap-1.5 text-azure hover:underline transition"
+            >
+              <RotateCcw size={12} /> {t('reset_demo', 'Reset interactive demo state')}
+            </button>
+          </div>
         </div>
       </Container>
     </footer>

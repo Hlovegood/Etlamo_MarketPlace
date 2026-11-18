@@ -149,8 +149,7 @@ export function PlannerCard({ planner }: { planner: User }) {
           <Avatar
             user={planner}
             size={56}
-            className="absolute -top-7 ring-4 ring-card shadow-float"
-            style={{ [isRtl ? 'right' : 'left']: '1.25rem' } as any}
+            className="absolute -top-7 left-5 rtl:left-auto rtl:right-5 ring-4 ring-card shadow-float"
           />
           <div className="flex items-center gap-1.5">
             <h3 className="text-[17px] font-semibold tracking-tight text-ink group-hover:text-azure transition">

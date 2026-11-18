@@ -306,6 +306,7 @@ export const translations: Record<Language, Record<string, string>> = {
     persona_switch_note: 'Switch accounts instantly to explore both sides of the marketplace.',
     visitor_mode: 'Visitor',
     reset_demo: 'Reset interactive demo state',
+    replay_preloader: 'Preview preloader',
     copyright: `© ${new Date().getFullYear()} Etlamo Inc. All portfolios, requests and reviews verified.`,
   },
   ar: {
@@ -600,6 +601,7 @@ export const translations: Record<Language, Record<string, string>> = {
     persona_switch_note: 'تنقل بين الحسابات لاختبار تجربة كل من العميل والمخطط وفريق المراجعة.',
     visitor_mode: 'وضع الزائر (غير مسجل)',
     reset_demo: 'إعادة ضبط البيانات التجريبية',
+    replay_preloader: 'استعراض شاشة التحميل',
     copyright: `© ${new Date().getFullYear()} إتلامو (Etlamo Inc). كافة الحقوق محفوظة، وجميع الملفات موثقة.`,
   },
 }
