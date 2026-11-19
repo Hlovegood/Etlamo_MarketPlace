@@ -5,7 +5,7 @@ import { useStore } from '../lib/store'
 import { useI18n } from '../lib/i18n'
 import { CATEGORIES, SAMPLE_LIBRARY } from '../lib/seed'
 import { cx, readImage } from '../lib/format'
-import { Button, Chip, Container, Empty, PageHeader, useToast } from '../components/ui'
+import { Button, Chip, Container, Empty, PageHeader, SmoothInput, useToast } from '../components/ui'
 
 export default function NewProject() {
   const { me, addProject } = useStore()
@@ -115,20 +115,20 @@ export default function NewProject() {
         </div>
         <div>
           <label className="label" htmlFor="t">Project title</label>
-          <input id="t" className="field" value={f.title} onChange={(e) => setF({ ...f, title: e.target.value })} placeholder="e.g. Rooftop Vows at Golden Hour" />
+          <SmoothInput id="t" value={f.title} onChange={(e) => setF({ ...f, title: e.target.value })} placeholder="e.g. Rooftop Vows at Golden Hour" />
         </div>
         <div className="grid gap-5 sm:grid-cols-3">
           <div>
             <label className="label" htmlFor="l">Location</label>
-            <input id="l" className="field" value={f.location} onChange={(e) => setF({ ...f, location: e.target.value })} placeholder="City, State" />
+            <SmoothInput id="l" value={f.location} onChange={(e) => setF({ ...f, location: e.target.value })} placeholder="City, State" />
           </div>
           <div>
             <label className="label" htmlFor="d">When</label>
-            <input id="d" type="month" className="field" value={f.date} onChange={(e) => setF({ ...f, date: e.target.value })} />
+            <SmoothInput id="d" type="month" value={f.date} onChange={(e) => setF({ ...f, date: e.target.value })} />
           </div>
           <div>
             <label className="label" htmlFor="g">Guests</label>
-            <input id="g" type="number" min={0} className="field" value={f.guests} onChange={(e) => setF({ ...f, guests: e.target.value })} placeholder="120" />
+            <SmoothInput id="g" type="number" min={0} value={f.guests} onChange={(e) => setF({ ...f, guests: e.target.value })} placeholder="120" />
           </div>
         </div>
         <div>
@@ -137,7 +137,7 @@ export default function NewProject() {
         </div>
         <div>
           <label className="label" htmlFor="tags">Tags <span className="font-normal text-silver">· comma separated</span></label>
-          <input id="tags" className="field" value={f.tags} onChange={(e) => setF({ ...f, tags: e.target.value })} placeholder="Garden, Black tie, Candlelight" />
+          <SmoothInput id="tags" value={f.tags} onChange={(e) => setF({ ...f, tags: e.target.value })} placeholder="Garden, Black tie, Candlelight" />
         </div>
         <div className="flex justify-end gap-2 border-t border-black/[0.06] dark:border-card-border pt-6">
           <Button type="button" variant="secondary" size="lg" onClick={() => history.back()}>

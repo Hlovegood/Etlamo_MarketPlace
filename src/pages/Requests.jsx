@@ -7,7 +7,7 @@ import { BUDGETS, CATEGORIES, NEEDS } from '../lib/seed'
 import { clockTime, cx, eventDate, firstName, publicName, timeAgo } from '../lib/format'
 import { RequestCard } from '../components/cards'
 import { ContactButton } from '../components/Contact'
-import { Avatar, Button, Chip, Container, Empty, PageHeader, Segmented, Verified, useToast } from '../components/ui'
+import { Avatar, Button, Chip, Container, Empty, PageHeader, Segmented, SmoothInput, Verified, useToast } from '../components/ui'
 
 export function RequestBoard() {
   const { db, me } = useStore()
@@ -295,20 +295,20 @@ export function PostRequest() {
         </div>
         <div>
           <label className="label" htmlFor="title">{t('req_headline_label', 'Give it a headline')}</label>
-          <input id="title" className="field" placeholder={t('req_headline_placeholder', 'e.g. Autumn vineyard wedding for 120 guests')} value={f.title} onChange={(e) => set('title', e.target.value)} />
+          <SmoothInput id="title" placeholder={t('req_headline_placeholder', 'e.g. Autumn vineyard wedding for 120 guests')} value={f.title} onChange={(e) => set('title', e.target.value)} />
         </div>
         <div className="grid gap-5 sm:grid-cols-3">
           <div>
             <label className="label" htmlFor="date">{t('req_date_label', 'Date')}</label>
-            <input id="date" type="date" className="field" value={f.date} onChange={(e) => set('date', e.target.value)} />
+            <SmoothInput id="date" type="date" value={f.date} onChange={(e) => set('date', e.target.value)} />
           </div>
           <div>
             <label className="label" htmlFor="loc">{t('req_location_label', 'Location')}</label>
-            <input id="loc" className="field" placeholder="City, State" value={f.location} onChange={(e) => set('location', e.target.value)} />
+            <SmoothInput id="loc" placeholder="City, State" value={f.location} onChange={(e) => set('location', e.target.value)} />
           </div>
           <div>
             <label className="label" htmlFor="guests">{t('req_guests_label', 'Guests')}</label>
-            <input id="guests" type="number" min={1} className="field" placeholder="100" value={f.guests} onChange={(e) => set('guests', e.target.value)} />
+            <SmoothInput id="guests" type="number" min={1} placeholder="100" value={f.guests} onChange={(e) => set('guests', e.target.value)} />
           </div>
         </div>
         <div>

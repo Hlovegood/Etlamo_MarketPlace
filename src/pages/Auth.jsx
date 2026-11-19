@@ -5,7 +5,7 @@ import { useStore } from '../lib/store'
 import { useI18n } from '../lib/i18n'
 import { img } from '../lib/seed'
 import { cx } from '../lib/format'
-import { Avatar, Button, useToast } from '../components/ui'
+import { Avatar, Button, SmoothInput, useToast } from '../components/ui'
 
 function AuthFrame({ children, image }) {
   const { isRtl } = useI18n()
@@ -112,25 +112,25 @@ export function SignUp({ query }) {
           <div className="mt-6 space-y-4">
             <div>
               <label className="label">{isRtl ? 'الاسم الكامل' : 'Full name'}</label>
-              <input className="field" value={f.name} onChange={(e) => set('name', e.target.value)} placeholder="Elena Marchetti" />
+              <SmoothInput value={f.name} onChange={(e) => set('name', e.target.value)} placeholder="Elena Marchetti" />
             </div>
             {role === 'planner' && (
               <div>
                 <label className="label">{isRtl ? 'اسم الاستوديو أو النشاط التجاري' : 'Business name'}</label>
-                <input className="field" value={f.business} onChange={(e) => set('business', e.target.value)} placeholder="Marchetti & Co." />
+                <SmoothInput value={f.business} onChange={(e) => set('business', e.target.value)} placeholder="Marchetti & Co." />
               </div>
             )}
             <div>
               <label className="label">{isRtl ? 'المدينة والمنطقة' : 'Primary location'}</label>
-              <input className="field" value={f.location} onChange={(e) => set('location', e.target.value)} placeholder="New York, NY" />
+              <SmoothInput value={f.location} onChange={(e) => set('location', e.target.value)} placeholder="New York, NY" />
             </div>
             <div>
               <label className="label">{isRtl ? 'البريد الإلكتروني' : 'Email'}</label>
-              <input type="email" className="field" value={f.email} onChange={(e) => set('email', e.target.value)} placeholder="elena@example.com" />
+              <SmoothInput type="email" value={f.email} onChange={(e) => set('email', e.target.value)} placeholder="elena@example.com" />
             </div>
             <div>
               <label className="label">{isRtl ? 'كلمة المرور' : 'Password'}</label>
-              <input type="password" className="field" value={f.password} onChange={(e) => set('password', e.target.value)} placeholder="8+ characters" />
+              <SmoothInput type="password" value={f.password} onChange={(e) => set('password', e.target.value)} placeholder="8+ characters" />
             </div>
             <label className="flex items-start gap-2.5 pt-2 text-[13px] text-graphite cursor-pointer">
               <input type="checkbox" checked={f.agree} onChange={(e) => set('agree', e.target.checked)} className="mt-0.5" />
@@ -208,11 +208,11 @@ export function SignIn({ query }) {
       >
         <div>
           <label className="label" htmlFor="email">{isRtl ? 'البريد الإلكتروني' : 'Email'}</label>
-          <input id="email" type="email" className="field" value={email} onChange={(e) => { setEmail(e.target.value); setError('') }} placeholder="you@example.com" />
+          <SmoothInput id="email" type="email" value={email} onChange={(e) => { setEmail(e.target.value); setError('') }} placeholder="you@example.com" />
         </div>
         <div>
           <label className="label" htmlFor="pw">{isRtl ? 'كلمة المرور' : 'Password'}</label>
-          <input id="pw" type="password" className="field" value={pw} onChange={(e) => { setPw(e.target.value); setError('') }} />
+          <SmoothInput id="pw" type="password" value={pw} onChange={(e) => { setPw(e.target.value); setError('') }} placeholder="••••••••" />
         </div>
         {error && <p className="rounded-xl bg-rose-500/10 border border-rose-500/20 px-4 py-3 text-[14px] text-rose-500">{error}</p>}
         <Button size="lg" type="submit" className="w-full" disabled={!email || !pw}>

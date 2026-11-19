@@ -334,3 +334,6 @@ export function PageHeader({ eyebrow, title, sub, right }) {
 export const Container = ({ children, className }) => (
   <div className={cx('mx-auto w-full max-w-[1240px] px-5 md:px-8', className)}>{children}</div>
 )
+
+export { SmoothInput } from './ui/SmoothInput'
+

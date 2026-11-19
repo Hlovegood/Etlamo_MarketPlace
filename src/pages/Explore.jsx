@@ -35,6 +35,7 @@ import {
   LightboxModal,
   PageHeader,
   Segmented,
+  SmoothInput,
   Verified,
   useToast,
 } from '../components/ui'
@@ -91,28 +92,26 @@ export function Explore() {
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="relative flex-1 md:w-72 md:flex-none">
-            <Search
-              size={15}
-              className={`absolute top-1/2 -translate-y-1/2 text-silver pointer-events-none ${isRtl ? 'right-3.5' : 'left-3.5'}`}
-            />
-            <input
+          <div className="flex-1 md:w-72 md:flex-none">
+            <SmoothInput
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder={t('search_placeholder', 'Search aesthetics, cities, venues…')}
-              className={`h-10 w-full rounded-full bg-mist text-[14px] text-ink placeholder:text-silver focus:ring-4 focus:ring-azure/15 transition-all ${
-                isRtl ? 'pr-9 pl-8' : 'pl-9 pr-8'
-              }`}
+              icon={<Search size={15} />}
+              rightIcon={
+                q ? (
+                  <button
+                    type="button"
+                    onClick={() => setQ('')}
+                    className="text-silver hover:text-ink cursor-pointer transition p-1"
+                    aria-label="Clear search"
+                  >
+                    <X size={14} />
+                  </button>
+                ) : null
+              }
+              className="h-10 rounded-full bg-mist text-[14px] border-transparent focus:border-azure"
             />
-            {q && (
-              <button
-                onClick={() => setQ('')}
-                className={`absolute top-1/2 -translate-y-1/2 text-silver hover:text-ink cursor-pointer ${isRtl ? 'left-3' : 'right-3'}`}
-                aria-label="Clear search"
-              >
-                <X size={14} />
-              </button>
-            )}
           </div>
 
           <Segmented

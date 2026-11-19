@@ -25,7 +25,7 @@ import { SPECIALTIES } from '../lib/seed'
 import { compact } from '../lib/format'
 import { PlannerCard, ProjectCard } from '../components/cards'
 import { ContactButton } from '../components/Contact'
-import { Avatar, Button, Chip, Container, Empty, PageHeader, RatingStars, Segmented, Verified } from '../components/ui'
+import { Avatar, Button, Chip, Container, Empty, PageHeader, RatingStars, Segmented, SmoothInput, Verified } from '../components/ui'
 import { FadeReveal } from '../components/animations'
 
 export function Planners() {
@@ -78,28 +78,26 @@ export function Planners() {
           'Every planner here has passed identity verification, commercial liability insurance checks, and past-client reference screening.',
         )}
         right={
-          <div className="relative w-full sm:w-80">
-            <Search
-              size={16}
-              className={`absolute top-1/2 -translate-y-1/2 text-silver pointer-events-none ${isRtl ? 'right-3.5' : 'left-3.5'}`}
-            />
-            <input
+          <div className="w-full sm:w-80">
+            <SmoothInput
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder={t('search_planners_placeholder', 'Search by name, business or city…')}
-              className={`h-11 w-full rounded-full bg-mist text-[15px] text-ink placeholder:text-silver focus:ring-4 focus:ring-azure/15 transition-all ${
-                isRtl ? 'pr-10 pl-8' : 'pl-10 pr-8'
-              }`}
+              icon={<Search size={16} />}
+              rightIcon={
+                q ? (
+                  <button
+                    type="button"
+                    onClick={() => setQ('')}
+                    className="text-silver hover:text-ink cursor-pointer transition p-1"
+                    aria-label="Clear search"
+                  >
+                    <X size={14} />
+                  </button>
+                ) : null
+              }
+              className="h-11 rounded-full bg-mist text-[15px] border-transparent focus:border-azure"
             />
-            {q && (
-              <button
-                onClick={() => setQ('')}
-                className={`absolute top-1/2 -translate-y-1/2 text-silver hover:text-ink cursor-pointer ${isRtl ? 'left-3' : 'right-3'}`}
-                aria-label="Clear search"
-              >
-                <X size={14} />
-              </button>
-            )}
           </div>
         }
       />

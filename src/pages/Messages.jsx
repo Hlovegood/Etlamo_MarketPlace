@@ -4,7 +4,7 @@ import { Link, navigate } from '../lib/router'
 import { useStore } from '../lib/store'
 import { useI18n } from '../lib/i18n'
 import { clockTime, cx, publicName } from '../lib/format'
-import { Avatar, Button, Container, Empty, Verified } from '../components/ui'
+import { Avatar, Button, Container, Empty, SmoothInput, Verified } from '../components/ui'
 
 export default function Messages({ threadId }) {
   const { db, me, getUser, markRead, sendMessage, typing } = useStore()
@@ -58,9 +58,14 @@ export default function Messages({ threadId }) {
         <aside className={cx('w-full shrink-0 flex-col border-r rtl:border-r-0 rtl:border-l border-black/[0.07] dark:border-card-border bg-[#fbfbfd] dark:bg-card/60 md:flex md:w-[340px]', active ? 'hidden' : 'flex')}>
           <div className="px-5 pt-5 pb-3">
             <h1 className="text-[28px] font-semibold tracking-tight text-ink">{t('messages_title', 'Messages')}</h1>
-            <div className="relative mt-3">
-              <Search size={14} className="absolute top-1/2 left-3 rtl:left-auto rtl:right-3 -translate-y-1/2 text-silver" />
-              <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t('search_messages', 'Search')} className="h-9 w-full rounded-[10px] bg-[#e8e8ed]/70 dark:bg-card-border/60 text-ink pr-3 pl-8 rtl:pr-8 rtl:pl-3 text-[14px] placeholder:text-silver" />
+            <div className="mt-3">
+              <SmoothInput
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder={t('search_messages', 'Search')}
+                icon={<Search size={14} />}
+                className="h-9 rounded-[10px] bg-[#e8e8ed]/70 dark:bg-card-border/60 text-ink text-[14px] border-transparent focus:border-azure"
+              />
             </div>
           </div>
           <div className="flex-1 overflow-y-auto px-2 pb-3">

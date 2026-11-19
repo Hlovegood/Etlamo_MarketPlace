@@ -5,7 +5,7 @@ import { useStore } from '../lib/store'
 import { useI18n } from '../lib/i18n'
 import { SPECIALTIES } from '../lib/seed'
 import { cx, timeAgo } from '../lib/format'
-import { Avatar, Button, Chip, Container, Empty, Modal, PageHeader, Verified, useToast } from '../components/ui'
+import { Avatar, Button, Chip, Container, Empty, Modal, PageHeader, SmoothInput, Verified, useToast } from '../components/ui'
 
 const STEPS = ['Business', 'Credentials', 'Review']
 
@@ -100,7 +100,7 @@ function VerifyForm({ me, onDone }) {
               <Field label="Primary city" value={f.location} onChange={(v) => set('location', v)} placeholder="Chicago, IL" />
               <div>
                 <label className="label">Years of experience</label>
-                <input type="number" min={0} className="field" value={f.yearsExp} onChange={(e) => set('yearsExp', Number(e.target.value))} />
+                <SmoothInput type="number" min={0} value={f.yearsExp} onChange={(e) => set('yearsExp', Number(e.target.value))} />
               </div>
               <Field label="Website or Instagram" value={f.website} onChange={(v) => set('website', v)} placeholder="averyevents.com" />
             </div>
@@ -164,11 +164,11 @@ function VerifyForm({ me, onDone }) {
   )
 }
 
-function Field({ label, value, onChange, placeholder }) {
+function Field({ label, value, onChange, placeholder, type = 'text' }) {
   return (
     <div>
       <label className="label">{label}</label>
-      <input className="field" value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} />
+      <SmoothInput type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} />
     </div>
   )
 }

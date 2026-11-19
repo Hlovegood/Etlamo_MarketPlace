@@ -5,7 +5,7 @@ import { greeting, useStore } from '../lib/store'
 import { useI18n } from '../lib/i18n'
 import { clockTime, compact, cx, eventDate, publicName, readImage } from '../lib/format'
 import { PlannerCard, ProjectCard, RequestCard } from '../components/cards'
-import { Avatar, Button, Container, Empty, Modal, Verified, useToast } from '../components/ui'
+import { Avatar, Button, Container, Empty, Modal, SmoothInput, Verified, useToast } from '../components/ui'
 
 export default function Dashboard() {
   const { me } = useStore()
@@ -310,11 +310,11 @@ function EditProfile({ open, onClose }) {
         <div className="mt-6 space-y-4">
           <div>
             <label className="label">Name</label>
-            <input className="field" value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} />
+            <SmoothInput value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} />
           </div>
           <div>
             <label className="label">City</label>
-            <input className="field" value={f.location} onChange={(e) => setF({ ...f, location: e.target.value })} />
+            <SmoothInput value={f.location} onChange={(e) => setF({ ...f, location: e.target.value })} />
           </div>
           {planner && (
             <>
@@ -324,7 +324,7 @@ function EditProfile({ open, onClose }) {
               </div>
               <div>
                 <label className="label">Packages start from (USD)</label>
-                <input type="number" className="field" value={f.priceFrom} onChange={(e) => setF({ ...f, priceFrom: e.target.value })} placeholder="5000" />
+                <SmoothInput type="number" value={f.priceFrom} onChange={(e) => setF({ ...f, priceFrom: e.target.value })} placeholder="5000" />
               </div>
             </>
           )}
